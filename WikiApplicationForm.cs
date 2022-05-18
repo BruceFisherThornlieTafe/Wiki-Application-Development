@@ -17,7 +17,7 @@ using System.Windows.Forms;
 /// 
 /// © Bruce Fisher P197681
 /// Date: 1/05/2022
-/// Version: v2.2
+/// Version: v2.3
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -35,6 +35,7 @@ using System.Windows.Forms;
 /// •   Method for User to Select Information from ListView and Display in Form ✔
 /// •   Method for DELETE button to delete Information from WikiList for ListView selection ✔
 /// •   Method for EDIT button to edit information in WikiList for ListView selection ✔
+/// •   Method for SEARCH button to Binary search WikiList for given Name and Display in From - ????????????????
 /// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -50,7 +51,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v2.2";
+        string versionNo = "v2.3";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -187,6 +188,17 @@ namespace WikiApplication
             {
                 DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView", statusBarErrorMsg);
             }
+        }
+        #endregion
+
+        #region SEARCH - needs to be done!
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(textBoxSearchName.Text))
+            {
+
+            }
+            else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
         }
         #endregion
 

@@ -62,7 +62,6 @@
             this.panelWikiList = new System.Windows.Forms.Panel();
             this.errorProviderNameInCorrect = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProviderNameCorrect = new System.Windows.Forms.ErrorProvider(this.components);
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.statusStripUserMessaging.SuspendLayout();
             this.panelWikiInput.SuspendLayout();
             this.panelStructure.SuspendLayout();
@@ -230,6 +229,7 @@
             this.buttonSearch.TabIndex = 5;
             this.buttonSearch.Text = "SEARCH";
             this.buttonSearch.UseVisualStyleBackColor = false;
+            this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
             // buttonOpen
             // 
@@ -461,10 +461,6 @@
             this.errorProviderNameCorrect.Icon = ((System.Drawing.Icon)(resources.GetObject("errorProviderNameCorrect.Icon")));
             this.errorProviderNameCorrect.RightToLeft = true;
             // 
-            // colorDialog1
-            // 
-            this.colorDialog1.Color = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
-            // 
             // WikiApplicationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -539,7 +535,6 @@
         private System.Windows.Forms.Panel panelStructureError;
         private System.Windows.Forms.Panel panelCategoryError;
         private System.Windows.Forms.Panel panelNameError;
-        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
 
