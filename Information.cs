@@ -131,7 +131,6 @@ namespace WikiApplication
         /// <param name="otherName">Attribute to compare with "name"</param>
         /// <returns>Integer which shows whether the value of the current instance is greater than, 
         /// equal to, or less than the value of the other instance</returns>
-
         public int CompareTo(Information otherName)
         {
             return this.name.CompareTo(otherName.name); // Attribute to compare with "name"

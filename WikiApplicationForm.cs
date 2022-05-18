@@ -17,7 +17,7 @@ using System.Windows.Forms;
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681
-/// Date: 1/05/2022
+/// Date: 2/05/2022
 /// Version: v2.5
 /// 
 /// Created:
@@ -31,12 +31,12 @@ using System.Windows.Forms;
 /// •   Method for Structure RadioButtons that using int to set RadioButtons selection ✔
 /// •   Extra Method for Structure RadioButtons to clear both selections ✔
 /// •   Method to Sort and Display to ListView the WikiList List of Instances of Information Name and Category ✔
-/// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔
-/// •   Method for ADD button to add Information to WikiList Include Validation for Form ✔
+/// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔ ??? exists ???
+/// •   Method for ADD button to add Information to WikiList Include Validation for Form ✔ constructor? ok to use ???
 /// •   Method for User to Select Information from ListView and Display in Form ✔
 /// •   Method for DELETE button to delete Information from WikiList for ListView selection ✔
 /// •   Method for EDIT button to edit information in WikiList for ListView selection ✔
-/// •   Method for SEARCH button to Binary search WikiList for given Name and Display in From - ????????????????
+/// •   Method for SEARCH button to Binary search WikiList for given Name and Display in From ✔
 /// •   Method for double click Name and clears the whole Form ✔
 /// •   Methods for OPEN/CLOSE buttons to open and close files and Upon Form closing Save to default file ✔
 /// 
@@ -114,7 +114,7 @@ namespace WikiApplication
             clearAllErrorPanels();
 
             // Clear the User Status Strip User Messaging
-            toolStripStatusLabelUserMessinging.Text = "";
+            toolStripStatusLabelUserMessaging.Text = "";
 
             // Focus User Input on Name at start
             textBoxName.Select();
@@ -123,7 +123,6 @@ namespace WikiApplication
         #endregion
 
         #region Form Setup Utilities ✔
-
         #region Link Label Deimos Website Click ✔
         /// <summary>
         /// Deimos Coding Projects website link pressed
@@ -138,7 +137,6 @@ namespace WikiApplication
             System.Diagnostics.Process.Start(target);
         }
         #endregion
-
         #region loadCategoryComboBox - Load Array into Category ComboBox ✔
         /// <summary>
         /// Fill Category ComboBox with items from Array categories
@@ -151,7 +149,6 @@ namespace WikiApplication
             }
         }
         #endregion
-
         #region comboBoxCategory_KeyPress - prevent user input from keypress - Selection from ComboBox Only Possible ✔
         /// <summary>
         /// Prevent ComboBox from manual entry from user
@@ -163,7 +160,6 @@ namespace WikiApplication
             e.Handled = true; // prevent keypress
         }
         #endregion
-
         #region listViewWiki_ColumnWidthChanging - prevent user from moving ListView Columns ✔
         /// <summary>
         /// Prevent Columns Widths from being changed by End User with Event
@@ -178,7 +174,6 @@ namespace WikiApplication
             e.Cancel = true;
         }
         #endregion
-
         #region Create Folder "Files" - createFilesFolder ✔
         private void createFilesFolder()
         {
@@ -197,11 +192,9 @@ namespace WikiApplication
             }
         }
         #endregion
-
         #endregion
 
         #region Form Buttons
-
         #region ADD Button ✔
         /// <summary>
         /// Add to WikiList Information from Form Input and ReDisplay ListView
@@ -217,7 +210,7 @@ namespace WikiApplication
             // Check validity of Form Input and check for Duplicate Information Name with validName then Add Information Form to WikiList as Instance
             if (validateFormInput() && validName(textBoxName.Text))
             {
-                toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
                 // Use Information Constructor to Add Information Instance to WikiList
                 WikiList.Add(new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
                 clearFormData(); // Clean Up Form
@@ -226,10 +219,9 @@ namespace WikiApplication
             }
         }
         #endregion
-
         #region EDIT Button ✔
         /// <summary>
-        /// Edit the selected Wiki Information from ListView into WikiList
+        /// Edit the selected Wiki Information selected from ListView into WikiList
         /// </summary>
         /// <param name="sender">Object which initiated the event</param>
         /// <param name="e">Event data</param>
@@ -244,11 +236,10 @@ namespace WikiApplication
             }
             catch
             {
-                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView", statusBarErrorMsg);
+                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView!", statusBarErrorMsg);
             }
         }
         #endregion
-
         #region DELETE Button ✔
         /// <summary>
         /// Delete the Information for WikiList Selected from the ListView with user Confirmation
@@ -262,7 +253,7 @@ namespace WikiApplication
                 // Check that the User has not modified after or entered new Information before current or previous ListView Selection
                 Information compareWith = new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
                 if (!informationMatches(WikiList.ElementAt(listViewWiki.SelectedIndices[0]), compareWith))
-                    DisplayToLabelMsg("ERROR: Information no longer Matches current Selection from List", statusBarErrorMsg);
+                    DisplayToLabelMsg("ERROR: Information no longer Matches current Selection from List!", statusBarErrorMsg);
                 else
                 {
                     DialogResult DeleteValue = MessageBox.Show("Are you sure you want to Delete this Information?", "Confirmation",
@@ -279,27 +270,56 @@ namespace WikiApplication
             }
             catch
             {
-                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView", statusBarErrorMsg);
+                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView!", statusBarErrorMsg);
             }
         }
         #endregion
-
         #region SEARCH Button - needs to be done!
         /// <summary>
-        /// 
+        /// Search WikiList for Name given from textBoxSearchName
+        /// List does not need to be sorted as done with each change to WikiList when displayed in ListView
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
         private void buttonSearch_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(textBoxSearchName.Text))
+            if (WikiList.Count != 0)
             {
+                if (!string.IsNullOrWhiteSpace(textBoxSearchName.Text))
+                {
+                    Information nameCompare = new Information(); // Instance of Information to pass to BinarySearch
+                    nameCompare.SetName(textBoxSearchName.Text); // Compare with <Information>textBoxSearchName
+                    int foundIndex = WikiList.BinarySearch(nameCompare); // Search WikiList for textBoxSearchName
+                    if (foundIndex > -1) // BinarySearch Returns bitwise complement ~-1 meaning could be less than -1 to support inserting items
+                    {
+                        clearErrorProviders(); // Clear all Error Providers
+                        // Load Form with Data from BinarySearch foundIndex
+                        textBoxName.Text = WikiList[foundIndex].GetName();
+                        comboBoxCategory.Text = WikiList[foundIndex].GetCatergory();
+                        switch (WikiList[foundIndex].GetStructure())
+                        {
+                            case "Linear":
+                                radioButtonStructureSetSelection(1);
+                                break;
+                            case "Non-Linear":
+                                radioButtonStructureSetSelection(2);
+                                break;
+                        }
+                        textBoxDefinition.Text = WikiList[foundIndex].GetDefinition();
+                        // Set ListView Item to Found Item
+                        listViewWiki.Items[foundIndex].Selected = true;
+                        listViewWiki.Focus();
 
+                        DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Found!", statusBarUserMsg);
+                    }
+                    else DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" NOT Found!", statusBarUserMsg);
+                }
+                else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
             }
-            else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
+            else DisplayToLabelMsg("ERROR: Nothing in the Wiki List to Search!", statusBarErrorMsg);
+            textBoxSearchName.Clear();
         }
         #endregion
-
         #region SAVE Button ✔
         /// <summary>
         /// Save WikiList to User Selected FileName
@@ -333,7 +353,6 @@ namespace WikiApplication
             } else DisplayToLabelMsg("ERROR: Nothing in List View WikiList to Save!", statusBarErrorMsg);
         }
         #endregion
-
         #region OPEN Button ✔
         /// <summary>
         /// Open User Selected FileName into WikiList
@@ -370,7 +389,7 @@ namespace WikiApplication
                 }
                 catch (IOException)
                 {
-                    DisplayToLabelMsg("SYSTEM ERROR: Invalid format File \"" + Path.GetFileName(userSelectedFileName) + "\"", statusBarErrorMsg);
+                    DisplayToLabelMsg("SYSTEM ERROR: Invalid File Format \"" + Path.GetFileName(userSelectedFileName) + "\"!", statusBarErrorMsg);
                 }
             }
             if (sr == DialogResult.Cancel)
@@ -379,11 +398,9 @@ namespace WikiApplication
             }
         }
         #endregion
-
         #endregion
 
         #region Structure RadioButtons Utilities ✔
-
         #region radioButtonStructureGetSelected ✔
         /// <summary>
         /// Returns Text from selected Structure Radio Button
@@ -406,7 +423,6 @@ namespace WikiApplication
             return radioButtonText;
         }
         #endregion
-
         #region radioButtonStructureSetSelection ✔
         /// <summary>
         /// Sets Structure RadioButton from passed integer
@@ -429,7 +445,6 @@ namespace WikiApplication
             }
         }
         #endregion
-
         #region radioButtonStructureClearSelections ✔
         /// <summary>
         /// Clears both RadioButtons within Panel Structure
@@ -440,15 +455,13 @@ namespace WikiApplication
             radioButtonNonLinear.Checked = false;
         }
         #endregion
-
         #endregion
 
         #region ListView Utilities ✔
-
         #region Display WikiList in ListView - displayWikiInformation ✔
         private void displayWikiInformation()
         {       
-            WikiList.Sort(); // Sort WikiList List of Instances of Infomation   
+            WikiList.Sort(); // Sort WikiList List of Instances of Infomation using CompareTo <Information>Name
             listViewWiki.Items.Clear(); // Clear ListView Items from listViewWiki
 
             foreach (var wikiInformation in WikiList)
@@ -466,7 +479,6 @@ namespace WikiApplication
             }
         }
         #endregion
-
         #region Display Data from selected ListView in Form - listViewWiki_MouseClick ✔
         /// <summary>
         /// Load Form with Data from User Selected ListView Item
@@ -475,7 +487,7 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void listViewWiki_MouseClick(object sender, MouseEventArgs e)
         {
-            int selectedItem = listViewWiki.SelectedIndices[0];
+            int selectedItem = listViewWiki.SelectedIndices[0]; // Item selected from ListView
 
             nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
             clearErrorProviders(); // Clear all Error Providers
@@ -494,10 +506,9 @@ namespace WikiApplication
             }
             textBoxDefinition.Text = WikiList[selectedItem].GetDefinition();
 
-            DisplayToLabelMsg("Information with Name: " + textBoxName.Text + " Selected from the List View", statusBarUserMsg);
+            DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Selected from the List View", statusBarUserMsg);
         }
         #endregion
-
         #endregion
 
         #region Clear Form upon Double Click textBoxName - textBoxName_MouseDoubleClick ✔
@@ -527,8 +538,7 @@ namespace WikiApplication
         }
         #endregion
 
-        #region File IO ✔
-
+        #region File IO 
         #region Save Binary File - saveBinaryFile ✔
         /// <summary>
         /// Save to Binary File passed fileName
@@ -539,6 +549,19 @@ namespace WikiApplication
             Boolean fileSaved = true;
             try
             {
+               /* using (var stream = File.Open(fileName, FileMode.Create))
+                {
+                    using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
+                    {
+                        foreach (var wikiInformation in WikiList)
+                        {
+                            writer.Write(wikiInformation.GetName());
+                            writer.Write(wikiInformation.GetCatergory());
+                            writer.Write(wikiInformation.GetStructure());
+                            writer.Write(wikiInformation.GetDefinition());
+                        }
+                    }
+                }*/
                 using (Stream stream = File.Open(fileName, FileMode.Create))
                 {
                     BinaryFormatter bin = new BinaryFormatter();
@@ -547,7 +570,8 @@ namespace WikiApplication
                         bin.Serialize(stream, wikiInformation);
                     }
                 }
-            }
+                        
+             }
             catch (IOException)
             {
                 fileSaved = false;
@@ -555,15 +579,11 @@ namespace WikiApplication
 
             return fileSaved;
         }
-
         #endregion
-
         #endregion
 
         #region Validation Utilities ✔
-
         #region Validation Utilities - For Wiki Name Input ✔
-
         #region validName - Prevent Duplicates ✔
         /// <summary>
         /// Checks for Duplicate Information Name in Information WikiList
@@ -572,21 +592,9 @@ namespace WikiApplication
         /// <returns>Boolean Valid - True, InValid - False</returns>
         private Boolean validName(string checkListName)
         {
-            Boolean noDuplicateFound = true;
-
-            // Check each Information Instance in WikiList for duplicate name
-            foreach (var wikiInformation in WikiList)
-            {
-                if (wikiInformation.GetName().Equals(checkListName))
-                {
-                    noDuplicateFound = false;
-                    break;
-                }
-            }
-            return noDuplicateFound;
+            return !WikiList.Exists(duplicate => duplicate.GetName() == checkListName);
         }
         #endregion
-
         #region textBoxName_Validating - User Error Messaging ✔
         /// <summary>
         /// Validate textBoxName Input Error Messaging
@@ -609,14 +617,13 @@ namespace WikiApplication
                 e.Cancel = false; // Allow other events
                 errorProviderNameInCorrect.Clear();
                 errorProviderNameCorrect.SetError(textBoxName, "Valid"); // icon hover user message
-                toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
             }
         }
         #endregion
-
         #region textBoxName_KeyPress - Clear Error Messaging ✔
         /// <summary>
-        /// On KeyPress for textBoxName Clear all the Error Providers and toolStripStatusLabelUserMessinging
+        /// On KeyPress for textBoxName Clear all the Error Providers and toolStripStatusLabelUserMessanging
         /// </summary>
         /// <param name="sender">Object which initiated the event</param>
         /// <param name="e">Event data</param>
@@ -626,7 +633,6 @@ namespace WikiApplication
             nameModifiedLookForDuplicate = true; // Display duplicate error messaging
         }
         #endregion
-
         #region Error Provider Message for Invalid Name - inCorrectError
         /// <summary>
         /// Display errorProvider message and icon
@@ -648,13 +654,11 @@ namespace WikiApplication
             // Clear all error providers on textBoxName
             errorProviderNameInCorrect.Clear();
             errorProviderNameCorrect.Clear();
-            toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+            toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
         }
         #endregion
         #endregion
-
         #endregion
-
         #region Form Validation - validateFormInput ✔
         /// <summary>
         /// Valid All Form input - display error red panels and user messaging for invalid inputs
@@ -700,7 +704,6 @@ namespace WikiApplication
             return formValid;
         }
         #endregion
-
         #region Compare two Information Instances Attributes - informationMatches ✔
         /// <summary>
         /// Compares Attributes for SelectedIndices Information Instance with Current Form Information created compareWith Instance
@@ -716,9 +719,7 @@ namespace WikiApplication
                 && string.Equals(selectedInformation.GetDefinition(), compareWith.GetDefinition());
         }
         #endregion
-
         #region Error Red Panels Utilities ✔
-
         #region Clear Error Panels Upon Mouse Click ✔
         /// <summary>
         /// Clears panelNameError, comboBoxCategory, panelCategoryError, panelDefinitionError
@@ -767,7 +768,6 @@ namespace WikiApplication
             else inCorrectNameError();
         }
         #endregion
-
         #region clearAllErrorPanels ✔
         /// <summary>
         /// Clear all of the error red panels
@@ -786,12 +786,10 @@ namespace WikiApplication
             panelDefinitionError.Visible = false;
         }
         #endregion
-        
         #endregion
-
         #region DisplayToLabelMsg - ToolStripStatus User Messaging Utility ✔
         /// <summary>
-        /// Displays string with given onto toolStripStatusLabelUserMessinging and flashes 
+        /// Displays string with given onto toolStripStatusLabelUserMessaging and flashes 
         /// statusStripUserMessaging to draw attention to user that message has been updated
         /// </summary>
         /// <param name="message">The string to Display in the Tool Label</param>
@@ -801,13 +799,13 @@ namespace WikiApplication
             switch (colour)
             {
                 case "Red":
-                    toolStripStatusLabelUserMessinging.ForeColor = Color.Red;
+                    toolStripStatusLabelUserMessaging.ForeColor = Color.Red;
                     break;
                 case "White":
-                    toolStripStatusLabelUserMessinging.ForeColor = Color.White;
+                    toolStripStatusLabelUserMessaging.ForeColor = Color.White;
                     break;
             }
-            toolStripStatusLabelUserMessinging.Text = message;
+            toolStripStatusLabelUserMessaging.Text = message;
 
             // Flash statusStripUserMessaging by changing statusStripUserMessaging visable on/off
             // to bring attention to error message
@@ -818,7 +816,6 @@ namespace WikiApplication
 
 
         #endregion
-
         #endregion
 
         #region Save WikiList to File Upon Form Closing - WikiApplicationForm_FormClosing ✔

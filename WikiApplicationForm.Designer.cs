@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WikiApplicationForm));
             this.statusStripUserMessaging = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabelUserMessinging = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelUserMessaging = new System.Windows.Forms.ToolStripStatusLabel();
             this.textBoxSearchName = new System.Windows.Forms.TextBox();
             this.listViewWiki = new System.Windows.Forms.ListView();
             this.columnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -62,6 +62,7 @@
             this.panelWikiList = new System.Windows.Forms.Panel();
             this.errorProviderNameInCorrect = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProviderNameCorrect = new System.Windows.Forms.ErrorProvider(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.statusStripUserMessaging.SuspendLayout();
             this.panelWikiInput.SuspendLayout();
             this.panelStructure.SuspendLayout();
@@ -74,20 +75,21 @@
             this.statusStripUserMessaging.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.statusStripUserMessaging.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStripUserMessaging.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabelUserMessinging});
+            this.toolStripStatusLabelUserMessaging});
             this.statusStripUserMessaging.Location = new System.Drawing.Point(0, 631);
             this.statusStripUserMessaging.Name = "statusStripUserMessaging";
             this.statusStripUserMessaging.Size = new System.Drawing.Size(684, 30);
             this.statusStripUserMessaging.TabIndex = 0;
             this.statusStripUserMessaging.Text = "statusStripUserMesseging";
+            this.toolTip1.SetToolTip(this.statusStripUserMessaging, "User Messaging");
             // 
-            // toolStripStatusLabelUserMessinging
+            // toolStripStatusLabelUserMessaging
             // 
-            this.toolStripStatusLabelUserMessinging.Font = new System.Drawing.Font("Segoe UI", 14F);
-            this.toolStripStatusLabelUserMessinging.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.toolStripStatusLabelUserMessinging.Name = "toolStripStatusLabelUserMessinging";
-            this.toolStripStatusLabelUserMessinging.Size = new System.Drawing.Size(313, 25);
-            this.toolStripStatusLabelUserMessinging.Text = "toolStripStatusLabelUserMessinging";
+            this.toolStripStatusLabelUserMessaging.Font = new System.Drawing.Font("Segoe UI", 14F);
+            this.toolStripStatusLabelUserMessaging.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.toolStripStatusLabelUserMessaging.Name = "toolStripStatusLabelUserMessaging";
+            this.toolStripStatusLabelUserMessaging.Size = new System.Drawing.Size(307, 25);
+            this.toolStripStatusLabelUserMessaging.Text = "toolStripStatusLabelUserMessaging";
             // 
             // textBoxSearchName
             // 
@@ -98,6 +100,7 @@
             this.textBoxSearchName.Name = "textBoxSearchName";
             this.textBoxSearchName.Size = new System.Drawing.Size(256, 29);
             this.textBoxSearchName.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.textBoxSearchName, "Enter Information Name to Search List View");
             // 
             // listViewWiki
             // 
@@ -113,6 +116,7 @@
             this.listViewWiki.Name = "listViewWiki";
             this.listViewWiki.Size = new System.Drawing.Size(340, 508);
             this.listViewWiki.TabIndex = 13;
+            this.toolTip1.SetToolTip(this.listViewWiki, "List View contains all Wiki Information");
             this.listViewWiki.UseCompatibleStateImageBehavior = false;
             this.listViewWiki.View = System.Windows.Forms.View.Details;
             this.listViewWiki.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listViewWiki_ColumnWidthChanging);
@@ -154,6 +158,7 @@
             this.linkLabelDeimosWebsite.TabIndex = 14;
             this.linkLabelDeimosWebsite.TabStop = true;
             this.linkLabelDeimosWebsite.Text = "DEIMOS CODING PROJECTS";
+            this.toolTip1.SetToolTip(this.linkLabelDeimosWebsite, "Deimos Coding Projects Website Link");
             this.linkLabelDeimosWebsite.Click += new System.EventHandler(this.linkLabelDeimosWebsite_Click);
             // 
             // labelWikiTitleLogo
@@ -166,6 +171,7 @@
             this.labelWikiTitleLogo.Size = new System.Drawing.Size(283, 24);
             this.labelWikiTitleLogo.TabIndex = 10;
             this.labelWikiTitleLogo.Text = "WikiList Title Logo goes Here";
+            this.toolTip1.SetToolTip(this.labelWikiTitleLogo, "Wiki Application Title and Version");
             // 
             // buttonAdd
             // 
@@ -180,6 +186,7 @@
             this.buttonAdd.Size = new System.Drawing.Size(86, 30);
             this.buttonAdd.TabIndex = 2;
             this.buttonAdd.Text = "ADD";
+            this.toolTip1.SetToolTip(this.buttonAdd, "Add Form Information to List View");
             this.buttonAdd.UseVisualStyleBackColor = false;
             this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
             // 
@@ -196,6 +203,7 @@
             this.buttonEdit.Size = new System.Drawing.Size(86, 30);
             this.buttonEdit.TabIndex = 3;
             this.buttonEdit.Text = "EDIT";
+            this.toolTip1.SetToolTip(this.buttonEdit, "Edit Form Information to List View");
             this.buttonEdit.UseVisualStyleBackColor = false;
             this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
             // 
@@ -212,6 +220,7 @@
             this.buttonDelete.Size = new System.Drawing.Size(86, 30);
             this.buttonDelete.TabIndex = 4;
             this.buttonDelete.Text = "DELETE";
+            this.toolTip1.SetToolTip(this.buttonDelete, "Delete Form Information from List View");
             this.buttonDelete.UseVisualStyleBackColor = false;
             this.buttonDelete.Click += new System.EventHandler(this.buttonDelete_Click);
             // 
@@ -228,6 +237,7 @@
             this.buttonSearch.Size = new System.Drawing.Size(86, 30);
             this.buttonSearch.TabIndex = 5;
             this.buttonSearch.Text = "SEARCH";
+            this.toolTip1.SetToolTip(this.buttonSearch, "Search List View for Information Name");
             this.buttonSearch.UseVisualStyleBackColor = false;
             this.buttonSearch.Click += new System.EventHandler(this.buttonSearch_Click);
             // 
@@ -244,6 +254,7 @@
             this.buttonOpen.Size = new System.Drawing.Size(86, 30);
             this.buttonOpen.TabIndex = 6;
             this.buttonOpen.Text = "OPEN";
+            this.toolTip1.SetToolTip(this.buttonOpen, "Open File of Wiki Information");
             this.buttonOpen.UseVisualStyleBackColor = false;
             this.buttonOpen.Click += new System.EventHandler(this.buttonOpen_Click);
             // 
@@ -260,6 +271,7 @@
             this.buttonSave.Size = new System.Drawing.Size(86, 30);
             this.buttonSave.TabIndex = 7;
             this.buttonSave.Text = "SAVE";
+            this.toolTip1.SetToolTip(this.buttonSave, "Save File of Wiki Information");
             this.buttonSave.UseVisualStyleBackColor = false;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
@@ -285,6 +297,7 @@
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(175, 29);
             this.textBoxName.TabIndex = 1;
+            this.toolTip1.SetToolTip(this.textBoxName, "Enter Information Name");
             this.textBoxName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxName_KeyPress);
             this.textBoxName.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.textBoxName_MouseDoubleClick);
             this.textBoxName.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxName_Validating);
@@ -299,6 +312,7 @@
             this.textBoxDefinition.Name = "textBoxDefinition";
             this.textBoxDefinition.Size = new System.Drawing.Size(266, 247);
             this.textBoxDefinition.TabIndex = 11;
+            this.toolTip1.SetToolTip(this.textBoxDefinition, "Enter Information Definition");
             // 
             // comboBoxCategory
             // 
@@ -309,6 +323,7 @@
             this.comboBoxCategory.Name = "comboBoxCategory";
             this.comboBoxCategory.Size = new System.Drawing.Size(175, 32);
             this.comboBoxCategory.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.comboBoxCategory, "Select Information Category");
             this.comboBoxCategory.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBoxCategory_KeyPress);
             this.comboBoxCategory.MouseClick += new System.Windows.Forms.MouseEventHandler(this.comboBoxCategory_MouseClick);
             // 
@@ -357,6 +372,7 @@
             this.radioButtonLinear.TabIndex = 9;
             this.radioButtonLinear.TabStop = true;
             this.radioButtonLinear.Text = "Linear";
+            this.toolTip1.SetToolTip(this.radioButtonLinear, "Select Information Structure");
             this.radioButtonLinear.UseVisualStyleBackColor = false;
             this.radioButtonLinear.MouseClick += new System.Windows.Forms.MouseEventHandler(this.radioButtonLinear_MouseClick);
             // 
@@ -371,6 +387,7 @@
             this.radioButtonNonLinear.TabIndex = 9;
             this.radioButtonNonLinear.TabStop = true;
             this.radioButtonNonLinear.Text = "Non-Linear";
+            this.toolTip1.SetToolTip(this.radioButtonNonLinear, "Select Information Structure");
             this.radioButtonNonLinear.UseVisualStyleBackColor = true;
             this.radioButtonNonLinear.MouseClick += new System.Windows.Forms.MouseEventHandler(this.radioButtonNonLinear_MouseClick);
             // 
@@ -508,7 +525,7 @@
         #endregion
 
         private System.Windows.Forms.StatusStrip statusStripUserMessaging;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelUserMessinging;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelUserMessaging;
         private System.Windows.Forms.TextBox textBoxSearchName;
         private System.Windows.Forms.ListView listViewWiki;
         private System.Windows.Forms.Label label1;
@@ -539,6 +556,7 @@
         private System.Windows.Forms.Panel panelStructureError;
         private System.Windows.Forms.Panel panelCategoryError;
         private System.Windows.Forms.Panel panelNameError;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
