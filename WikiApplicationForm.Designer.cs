@@ -28,14 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WikiApplicationForm));
             this.statusStripUserMessaging = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelUserMessinging = new System.Windows.Forms.ToolStripStatusLabel();
             this.textBoxSearchName = new System.Windows.Forms.TextBox();
             this.listViewWiki = new System.Windows.Forms.ListView();
+            this.columnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderCategory = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.linkLabelDeimosWebsite = new System.Windows.Forms.LinkLabel();
             this.labelWikiTitleLogo = new System.Windows.Forms.Label();
             this.buttonAdd = new System.Windows.Forms.Button();
@@ -55,17 +55,9 @@
             this.labelStructure = new System.Windows.Forms.Label();
             this.labelDefinition = new System.Windows.Forms.Label();
             this.panelWikiList = new System.Windows.Forms.Panel();
-            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.errorProvider3 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.errorProvider4 = new System.Windows.Forms.ErrorProvider(this.components);
             this.statusStripUserMessaging.SuspendLayout();
             this.panelWikiInput.SuspendLayout();
             this.panelStructure.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStripUserMessaging
@@ -97,18 +89,34 @@
             this.textBoxSearchName.Name = "textBoxSearchName";
             this.textBoxSearchName.Size = new System.Drawing.Size(256, 29);
             this.textBoxSearchName.TabIndex = 5;
-            this.textBoxSearchName.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxSearchName_Validating);
             // 
             // listViewWiki
             // 
             this.listViewWiki.BackColor = System.Drawing.Color.White;
             this.listViewWiki.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listViewWiki.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeaderName,
+            this.columnHeaderCategory});
+            this.listViewWiki.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listViewWiki.FullRowSelect = true;
             this.listViewWiki.HideSelection = false;
             this.listViewWiki.Location = new System.Drawing.Point(319, 107);
             this.listViewWiki.Name = "listViewWiki";
             this.listViewWiki.Size = new System.Drawing.Size(340, 508);
             this.listViewWiki.TabIndex = 11;
             this.listViewWiki.UseCompatibleStateImageBehavior = false;
+            this.listViewWiki.View = System.Windows.Forms.View.Details;
+            this.listViewWiki.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listViewWiki_ColumnWidthChanging);
+            // 
+            // columnHeaderName
+            // 
+            this.columnHeaderName.Text = "Name";
+            this.columnHeaderName.Width = 200;
+            // 
+            // columnHeaderCategory
+            // 
+            this.columnHeaderCategory.Text = "Category";
+            this.columnHeaderCategory.Width = 140;
             // 
             // label1
             // 
@@ -122,12 +130,6 @@
             this.label1.Size = new System.Drawing.Size(61, 24);
             this.label1.TabIndex = 7;
             this.label1.Text = "Name";
-            // 
-            // imageList1
-            // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // linkLabelDeimosWebsite
             // 
@@ -153,7 +155,7 @@
             this.labelWikiTitleLogo.Name = "labelWikiTitleLogo";
             this.labelWikiTitleLogo.Size = new System.Drawing.Size(252, 24);
             this.labelWikiTitleLogo.TabIndex = 10;
-            this.labelWikiTitleLogo.Text = "Wiki Title Logo goes Here";
+            this.labelWikiTitleLogo.Text = "WikiList Title Logo goes Here";
             // 
             // buttonAdd
             // 
@@ -267,7 +269,6 @@
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.Size = new System.Drawing.Size(175, 29);
             this.textBoxName.TabIndex = 6;
-            this.textBoxName.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxName_Validating);
             // 
             // textBoxDefinition
             // 
@@ -279,7 +280,6 @@
             this.textBoxDefinition.Name = "textBoxDefinition";
             this.textBoxDefinition.Size = new System.Drawing.Size(266, 247);
             this.textBoxDefinition.TabIndex = 10;
-            this.textBoxDefinition.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxDefinition_Validating);
             // 
             // comboBoxCategory
             // 
@@ -290,7 +290,6 @@
             this.comboBoxCategory.Name = "comboBoxCategory";
             this.comboBoxCategory.Size = new System.Drawing.Size(175, 32);
             this.comboBoxCategory.TabIndex = 7;
-            this.comboBoxCategory.Validating += new System.ComponentModel.CancelEventHandler(this.comboBoxCategory_Validating);
             // 
             // panelWikiInput
             // 
@@ -320,7 +319,6 @@
             this.panelStructure.Name = "panelStructure";
             this.panelStructure.Size = new System.Drawing.Size(266, 60);
             this.panelStructure.TabIndex = 17;
-            this.panelStructure.Validating += new System.ComponentModel.CancelEventHandler(this.panelStructure_Validating);
             // 
             // radioButtonLinear
             // 
@@ -379,27 +377,11 @@
             this.panelWikiList.Size = new System.Drawing.Size(354, 522);
             this.panelWikiList.TabIndex = 16;
             // 
-            // errorProvider1
-            // 
-            this.errorProvider1.ContainerControl = this;
-            // 
-            // errorProvider2
-            // 
-            this.errorProvider2.ContainerControl = this;
-            // 
-            // errorProvider3
-            // 
-            this.errorProvider3.ContainerControl = this;
-            // 
-            // errorProvider4
-            // 
-            this.errorProvider4.ContainerControl = this;
-            // 
             // WikiApplicationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::WikiApplication.Properties.Resources.Binary_Background_5;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(684, 661);
             this.Controls.Add(this.buttonSave);
@@ -420,7 +402,7 @@
             this.MinimizeBox = false;
             this.Name = "WikiApplicationForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Wiki Application";
+            this.Text = "WikiList Application";
             this.Load += new System.EventHandler(this.WikiApplicationForm_Load);
             this.statusStripUserMessaging.ResumeLayout(false);
             this.statusStripUserMessaging.PerformLayout();
@@ -428,10 +410,6 @@
             this.panelWikiInput.PerformLayout();
             this.panelStructure.ResumeLayout(false);
             this.panelStructure.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -444,7 +422,6 @@
         private System.Windows.Forms.TextBox textBoxSearchName;
         private System.Windows.Forms.ListView listViewWiki;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.LinkLabel linkLabelDeimosWebsite;
         private System.Windows.Forms.Label labelWikiTitleLogo;
         private System.Windows.Forms.Button buttonAdd;
@@ -464,10 +441,8 @@
         private System.Windows.Forms.RadioButton radioButtonNonLinear;
         private System.Windows.Forms.RadioButton radioButtonLinear;
         private System.Windows.Forms.Panel panelStructure;
-        private System.Windows.Forms.ErrorProvider errorProvider1;
-        private System.Windows.Forms.ErrorProvider errorProvider2;
-        private System.Windows.Forms.ErrorProvider errorProvider3;
-        private System.Windows.Forms.ErrorProvider errorProvider4;
+        private System.Windows.Forms.ColumnHeader columnHeaderName;
+        private System.Windows.Forms.ColumnHeader columnHeaderCategory;
     }
 }
 

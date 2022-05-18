@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 /// <summary>
-/// Project: Wiki Application
+/// Project: WikiList Application
 /// 
 /// Fully functional wiki application for categories and definitions
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681
 /// Date: 28/04/2022
-/// Version: v1.6
+/// Version: v1.7
 /// 
 /// Created:
 /// •   Information Class ✔
-/// •   List Wiki of Information Class ✔
+/// •   List WikiList of Information Class ✔
 /// •   Form GUI Layout Design ✔
 /// •   Method for Status Strip Error Messaging ✔
 /// •   Create string Array for ComboBox Category ✔
@@ -29,8 +29,9 @@ using System.Windows.Forms;
 /// •   Method for Structure RadioButtons that returns string value from selection ✔
 /// •   Method for Structure RadioButtons that using int to set RadioButtons selection ✔
 /// •   Extra Method for Structure RadioButtons to clear both selections ✔
+/// •   Method to Sort and Display to ListView the WikiList List of Instances of Information Name and Category ✔
 ///
-/// Refernce for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
+/// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
 /// To group RadioButton controls as a set to function independently of other sets
 /// •   Drag a GroupBox or Panel control from the Windows Forms tab on the Toolbox onto the form.
@@ -44,13 +45,13 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v1.6";
+        string versionNo = "v1.7";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
 
-        // List to store Wiki Information Class
-        List<Information> Wiki = new List<Information>();
+        // List to store WikiList Information Class
+        List<Information> WikiList = new List<Information>();
 
         // Category String Array
         string[] categories = new string[6] {"Array","List", "Tree", "Graphs", "Abstract", "Hash" };
@@ -78,7 +79,7 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void WikiApplicationForm_Load(object sender, EventArgs e)
         {
-            // Wiki Logo Title
+            // WikiList Logo Title
             labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
 
             // prefill Category ComboBox
@@ -86,6 +87,14 @@ namespace WikiApplication
 
             // Clear the User Status Strip User Messaging
             toolStripStatusLabelUserMessinging.Text = "";
+
+            // ################################################## TEST DATA FOR LISTVIEW ####################################################################################
+            WikiList.Add(new Information("Heap", "Tree", "Non-Linear", "Aheap of information for definition"));
+            WikiList.Add(new Information("Array", "Array", "Linear", "Aheap of information for definition"));
+            WikiList.Add(new Information("List", "List", "Linear", "Aheap of information for definition"));
+            WikiList.Add(new Information("Self-Balance Tree", "Tree", "Non-Linear", "Aheap of information for definition"));
+
+            displayWikiInformation();
         }
         #endregion
 
@@ -177,30 +186,43 @@ namespace WikiApplication
         #endregion
         #endregion
 
-        #region Validation Error Provider Events
-        private void textBoxName_Validating(object sender, CancelEventArgs e)
+        #region displayWikiInformation ✔
+        private void displayWikiInformation()
         {
-        
+            // Sort WikiList List of Instances of Infomation
+            WikiList.Sort();
+
+            // Clear ListView Items from listViewWiki
+            listViewWiki.Items.Clear(); 
+
+            foreach (var wikiInformation in WikiList)
+            {
+                // create a list view item for each row
+                // display in first column for Name
+                ListViewItem listViewItem = new ListViewItem(wikiInformation.GetName());
+
+                // add the next list view item for row
+                // display in second column for Category
+                listViewItem.SubItems.Add(wikiInformation.GetCatergory());
+
+                // add the list view row of items to listViewWiki
+                listViewWiki.Items.Add(listViewItem);
+            }
         }
+        #endregion
 
-        private void comboBoxCategory_Validating(object sender, CancelEventArgs e)
+        #region listViewWiki_ColumnWidthChanging ✔
+        /// <summary>
+        /// Prevent Columns Widths from being changed by End User with Event
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void listViewWiki_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
         {
-
-        }
-
-        private void panelStructure_Validating(object sender, CancelEventArgs e)
-        {
-
-        }
-
-        private void textBoxDefinition_Validating(object sender, CancelEventArgs e)
-        {
-
-        }
-
-        private void textBoxSearchName_Validating(object sender, CancelEventArgs e)
-        {
-
+            // Keep the curent width not changed
+            e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
+            // Cancel the event
+            e.Cancel = true;
         }
         #endregion
 
@@ -235,6 +257,7 @@ namespace WikiApplication
             statusStripUserMessaging.Visible = true;
         }
         #endregion
+
         #endregion
     }
 }

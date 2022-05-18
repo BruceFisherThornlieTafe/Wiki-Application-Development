@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 /// <summary>
-/// Wiki Application Information Class
+/// WikiList Application Information Class
 /// 
 /// © Bruce Fisher P197681
 /// 20-2-2022 
@@ -41,10 +41,10 @@ namespace WikiApplication
         /// <summary>
         /// Sets Attributes for each new Instance created
         /// </summary>
-        /// <param name="newName">New Wiki name</param>
-        /// <param name="newCategory">New Wiki catergory</param>
-        /// <param name="newStructure">New Wiki structure</param>
-        /// <param name="newDefinition">New Wiki definition</param>
+        /// <param name="newName">New WikiList name</param>
+        /// <param name="newCategory">New WikiList catergory</param>
+        /// <param name="newStructure">New WikiList structure</param>
+        /// <param name="newDefinition">New WikiList definition</param>
         public Information(string newName, string newCategory, string newStructure, string newDefinition)
         {
             name = newName;
