@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,13 +17,15 @@ using System.Windows.Forms;
 /// 
 /// © Bruce Fisher P197681
 /// Date: 28/04/2022
-/// Version: v1.3
+/// Version: v1.5
 /// 
 /// Created:
-/// •   Information Class 
-/// •   List Wiki of Information Class
-/// •   Form GUI Layout Design
-/// •   Method for Status Strip Error Messaging
+/// •   Information Class ✔
+/// •   List Wiki of Information Class ✔
+/// •   Form GUI Layout Design ✔
+/// •   Method for Status Strip Error Messaging ✔
+/// •   Create string Array for ComboBox Category ✔
+/// •   Method to populate ComboBox Category upon Form Load ✔
 ///
 /// Refernce for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -38,13 +41,16 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v1.2";
+        string versionNo = "v1.4";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
 
         // List to store Wiki Information Class
         List<Information> Wiki = new List<Information>();
+
+        // Category String Array
+        string[] categories = new string[6] {"Array","List", "Tree", "Graphs", "Abstract", "Hash" };
 
         // Used to switch DisplayToLabelMsg text colour
         const string statusBarErrorMsg = "Red"; // Error message
@@ -60,9 +66,6 @@ namespace WikiApplication
         public WikiApplicationForm()
         {
             InitializeComponent();
-
-            // Wiki Logo Title
-            labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
         }
         #endregion
 
@@ -81,10 +84,38 @@ namespace WikiApplication
         }
         #endregion
 
+        #region WikiApplicationForm_Load
+        /// <summary>
+        /// Unpon form Load Process the following
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void WikiApplicationForm_Load(object sender, EventArgs e)
+        {
+            // Wiki Logo Title
+            labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
+
+            loadCategoryComboBox(); // prefill Category ComboBox
+        }
+        #endregion
+
+        #region loadCategoryComboBox ✔
+        /// <summary>
+        /// Fill Category ComboBox with items from Array categories
+        /// </summary>
+        private void loadCategoryComboBox()
+        {
+            foreach (string item in categories)
+            {
+                comboBoxCategory.Items.Add(item);
+            }
+        }
+        #endregion
+
         #region Validation Error Provider Events
         private void textBoxName_Validating(object sender, CancelEventArgs e)
         {
-
+        
         }
 
         private void comboBoxCategory_Validating(object sender, CancelEventArgs e)
@@ -142,5 +173,7 @@ namespace WikiApplication
             statusStripUserMessaging.Visible = true;
         }
         #endregion
+
+        
     }
 }

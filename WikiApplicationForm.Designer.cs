@@ -415,8 +415,12 @@
             this.Controls.Add(this.panelWikiInput);
             this.Controls.Add(this.panelWikiList);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "WikiApplicationForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Wiki Application";
+            this.Load += new System.EventHandler(this.WikiApplicationForm_Load);
             this.statusStripUserMessaging.ResumeLayout(false);
             this.statusStripUserMessaging.PerformLayout();
             this.panelWikiInput.ResumeLayout(false);
