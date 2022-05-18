@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,7 +18,7 @@ using System.Windows.Forms;
 /// 
 /// © Bruce Fisher P197681
 /// Date: 1/05/2022
-/// Version: v2.3
+/// Version: v2.5
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -36,6 +37,8 @@ using System.Windows.Forms;
 /// •   Method for DELETE button to delete Information from WikiList for ListView selection ✔
 /// •   Method for EDIT button to edit information in WikiList for ListView selection ✔
 /// •   Method for SEARCH button to Binary search WikiList for given Name and Display in From - ????????????????
+/// •   Method for double click Name and clears the whole Form ✔
+/// •   Methods for OPEN/CLOSE buttons to open and close files and Upon Form closing Save to default file ✔
 /// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -51,7 +54,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v2.3";
+        string versionNo = "v2.5";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -64,6 +67,16 @@ namespace WikiApplication
 
         // Used to prevent Name Displaying duplicate errorProvider messaging when editing Information
         Boolean nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
+
+        // Used to create default File Name to Open and Save
+        const string useFileName = "definitions.bin";
+
+        // SubFolder "files" for file to be saved in - if does not exist at Executable Path it is created at WikiPrototypeForm_Load
+        // Allows application to run anywhere as a stand alone executable
+        string filesFolderPath = Path.GetDirectoryName(Application.ExecutablePath) + @"\Files\";
+
+        // Default files folder used within current Application Executable Path - Allows application to run on anywhere
+        string defaultFileFolder = Path.GetDirectoryName(Application.ExecutablePath) + @"\Files\";
 
         // Used to switch DisplayToLabelMsg text colour
         const string statusBarErrorMsg = "Red"; // Error message
@@ -88,6 +101,9 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void WikiApplicationForm_Load(object sender, EventArgs e)
         {
+            // Attempt to create "Files" folder for all files to be saved to
+            createFilesFolder();
+
             // WikiList Logo Title
             labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
 
@@ -104,6 +120,84 @@ namespace WikiApplication
             textBoxName.Select();
             textBoxName.Focus(); 
         }
+        #endregion
+
+        #region Form Setup Utilities ✔
+
+        #region Link Label Deimos Website Click ✔
+        /// <summary>
+        /// Deimos Coding Projects website link pressed
+        /// 
+        /// Website: https://deimoscodingprojects.com/
+        /// YouTube Channel: https://www.youtube.com/channel/UCSss3BTapsr-cQgmV0NgtTg
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void linkLabelDeimosWebsite_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(target);
+        }
+        #endregion
+
+        #region loadCategoryComboBox - Load Array into Category ComboBox ✔
+        /// <summary>
+        /// Fill Category ComboBox with items from Array categories
+        /// </summary>
+        private void loadCategoryComboBox()
+        {
+            foreach (string item in categories)
+            {
+                comboBoxCategory.Items.Add(item);
+            }
+        }
+        #endregion
+
+        #region comboBoxCategory_KeyPress - prevent user input from keypress - Selection from ComboBox Only Possible ✔
+        /// <summary>
+        /// Prevent ComboBox from manual entry from user
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void comboBoxCategory_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true; // prevent keypress
+        }
+        #endregion
+
+        #region listViewWiki_ColumnWidthChanging - prevent user from moving ListView Columns ✔
+        /// <summary>
+        /// Prevent Columns Widths from being changed by End User with Event
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void listViewWiki_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            // Keep the curent width not changed
+            e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
+            // Cancel the event
+            e.Cancel = true;
+        }
+        #endregion
+
+        #region Create Folder "Files" - createFilesFolder ✔
+        private void createFilesFolder()
+        {
+            // If "Files" folder does not exist at Executable Path then try to create
+            try
+            {
+                if (!Directory.Exists(filesFolderPath))
+                {
+                    Directory.CreateDirectory(filesFolderPath);
+                    MessageBox.Show("System Message: Have Created Sub Folder \"Files\" as did not Exist");
+                }
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("System Error: Cannot Create Folder " + Path.GetFileName(filesFolderPath));
+            }
+        }
+        #endregion
+
         #endregion
 
         #region Form Buttons
@@ -126,9 +220,9 @@ namespace WikiApplication
                 toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
                 // Use Information Constructor to Add Information Instance to WikiList
                 WikiList.Add(new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
+                clearFormData(); // Clean Up Form
                 DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Added to Wiki List", statusBarUserMsg);
                 displayWikiInformation(); // Display WikiList to ListView
-                clearFormData(); // Clean Up Form
             }
         }
         #endregion
@@ -144,9 +238,9 @@ namespace WikiApplication
             try
             {
                 WikiList[listViewWiki.SelectedIndices[0]] = new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
-                DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Edited in Wiki List", statusBarUserMsg);
-                displayWikiInformation(); // Display WikiList to ListView
                 clearFormData(); // clean up form
+                DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Edited in Wiki List", statusBarUserMsg);
+                displayWikiInformation(); // Display WikiList to ListView  
             }
             catch
             {
@@ -176,12 +270,11 @@ namespace WikiApplication
                     if (DeleteValue == DialogResult.Yes)
                     {
                         WikiList.RemoveAt(listViewWiki.SelectedIndices[0]);
+                        clearFormData(); // clean up form
                         DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Deleted from Wiki List", statusBarUserMsg);
                         displayWikiInformation(); // Display WikiList to ListView
-                        clearFormData(); // clean up form
                     }
-                    else
-                        DisplayToLabelMsg("User Cancelled Deletion of Information", statusBarUserMsg);
+                    else DisplayToLabelMsg("User Cancelled Deletion of Information", statusBarUserMsg);
                 }
             }
             catch
@@ -191,7 +284,12 @@ namespace WikiApplication
         }
         #endregion
 
-        #region SEARCH - needs to be done!
+        #region SEARCH Button - needs to be done!
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonSearch_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(textBoxSearchName.Text))
@@ -199,6 +297,86 @@ namespace WikiApplication
 
             }
             else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
+        }
+        #endregion
+
+        #region SAVE Button ✔
+        /// <summary>
+        /// Save WikiList to User Selected FileName
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveBinaryDialog = new SaveFileDialog();
+            saveBinaryDialog.InitialDirectory = defaultFileFolder;
+
+            saveBinaryDialog.Filter = "bin files (*.bin)|*.bin";
+            string userSelectedFileName = "";
+
+            if (WikiList.Count != 0)
+            {
+                DialogResult sr = saveBinaryDialog.ShowDialog();
+                if (sr == DialogResult.OK)
+                {
+                    clearFormData(); // Clean Up Form
+                    userSelectedFileName = saveBinaryDialog.FileName;
+                    if (saveBinaryFile(userSelectedFileName))
+                        DisplayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Saved.", statusBarUserMsg);
+                    else 
+                        DisplayToLabelMsg("SYSTEM ERROR: Cannot Write data to file " + Path.GetFileName(userSelectedFileName) + "!", statusBarErrorMsg);
+                }
+                if (sr == DialogResult.Cancel)
+                {
+                    DisplayToLabelMsg("USER CANCELLED: Did NOT Save Records to a File.", statusBarUserMsg);
+                }
+            } else DisplayToLabelMsg("ERROR: Nothing in List View WikiList to Save!", statusBarErrorMsg);
+        }
+        #endregion
+
+        #region OPEN Button ✔
+        /// <summary>
+        /// Open User Selected FileName into WikiList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">Event data</param>
+        private void buttonOpen_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openBinaryDialog = new OpenFileDialog();
+            openBinaryDialog.InitialDirectory = defaultFileFolder;
+            openBinaryDialog.FileName = useFileName; // default File Name
+
+            openBinaryDialog.Filter = "bin files (*.bin)|*.bin";
+            string userSelectedFileName = "";
+
+            DialogResult sr = openBinaryDialog.ShowDialog();
+            if (sr == DialogResult.OK)
+            {
+                userSelectedFileName = openBinaryDialog.FileName; // Use file from User Selected/Entered Filename
+                try
+                {
+                    using (Stream stream = File.Open(userSelectedFileName, FileMode.Open))
+                    {
+                        BinaryFormatter bin = new BinaryFormatter();
+                        WikiList.Clear(); // Clear WikiList
+                        while (stream.Position < stream.Length)
+                        {
+                            WikiList.Add((Information)bin.Deserialize(stream));
+                        }
+                    }
+                    displayWikiInformation(); // Display WikiList to ListView
+                    clearFormData(); // Clean Up Form
+                    DisplayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Opened.", statusBarUserMsg);
+                }
+                catch (IOException)
+                {
+                    DisplayToLabelMsg("SYSTEM ERROR: Invalid format File \"" + Path.GetFileName(userSelectedFileName) + "\"", statusBarErrorMsg);
+                }
+            }
+            if (sr == DialogResult.Cancel)
+            {
+                DisplayToLabelMsg("USER CANCELLED: Did NOT Read Records from a File.", statusBarUserMsg);
+            }
         }
         #endregion
 
@@ -322,7 +500,19 @@ namespace WikiApplication
 
         #endregion
 
-        #region Clear Form Data - clearFormData
+        #region Clear Form upon Double Click textBoxName - textBoxName_MouseDoubleClick ✔
+        /// <summary>
+        /// Clear Form with Double Click on textBoxName
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBoxName_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            clearFormData(); // Clean Up Form
+        }
+        #endregion
+
+        #region Clear Form Data - clearFormData ✔
         /// <summary>
         /// Clears all From Input Data and refocuses on Name input
         /// </summary>
@@ -337,61 +527,35 @@ namespace WikiApplication
         }
         #endregion
 
-        #region Form Setup Utilities ✔
+        #region File IO ✔
 
-        #region Link Label Deimos Website Click ✔
+        #region Save Binary File - saveBinaryFile ✔
         /// <summary>
-        /// Deimos Coding Projects website link pressed
-        /// 
-        /// Website: https://deimoscodingprojects.com/
-        /// YouTube Channel: https://www.youtube.com/channel/UCSss3BTapsr-cQgmV0NgtTg
+        /// Save to Binary File passed fileName
         /// </summary>
-        /// <param name="sender">Object which initiated the event</param>
-        /// <param name="e">Event data</param>
-        private void linkLabelDeimosWebsite_Click(object sender, EventArgs e)
+        /// <param name="fileName">File Name to Save to</param>
+        private Boolean saveBinaryFile(string fileName)
         {
-            System.Diagnostics.Process.Start(target);
-        }
-        #endregion
-
-        #region loadCategoryComboBox - Load Array into Category ComboBox ✔
-        /// <summary>
-        /// Fill Category ComboBox with items from Array categories
-        /// </summary>
-        private void loadCategoryComboBox()
-        {
-            foreach (string item in categories)
+            Boolean fileSaved = true;
+            try
             {
-                comboBoxCategory.Items.Add(item);
+                using (Stream stream = File.Open(fileName, FileMode.Create))
+                {
+                    BinaryFormatter bin = new BinaryFormatter();
+                    foreach (var wikiInformation in WikiList)
+                    {
+                        bin.Serialize(stream, wikiInformation);
+                    }
+                }
             }
-        }
-        #endregion
+            catch (IOException)
+            {
+                fileSaved = false;
+            }
 
-        #region comboBoxCategory_KeyPress - prevent user input from keypress - Selection from ComboBox Only Possible ✔
-        /// <summary>
-        /// Prevent ComboBox from manual entry from user
-        /// </summary>
-        /// <param name="sender">Object which initiated the event</param>
-        /// <param name="e">Event data</param>
-        private void comboBoxCategory_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            e.Handled = true; // prevent keypress
+            return fileSaved;
         }
-        #endregion
 
-        #region listViewWiki_ColumnWidthChanging - prevent user from moving ListView Columns ✔
-        /// <summary>
-        /// Prevent Columns Widths from being changed by End User with Event
-        /// </summary>
-        /// <param name="sender">Object which initiated the event</param>
-        /// <param name="e">Event data</param>
-        private void listViewWiki_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
-        {
-            // Keep the curent width not changed
-            e.NewWidth = ((ListView)sender).Columns[e.ColumnIndex].Width;
-            // Cancel the event
-            e.Cancel = true;
-        }
         #endregion
 
         #endregion
@@ -652,8 +816,22 @@ namespace WikiApplication
             statusStripUserMessaging.Visible = true;
         }
 
+
         #endregion
 
+        #endregion
+
+        #region Save WikiList to File Upon Form Closing - WikiApplicationForm_FormClosing ✔
+        /// <summary>
+        /// Upon form closing Save WikiList to default filename
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void WikiApplicationForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (WikiList.Count != 0)
+                saveBinaryFile(defaultFileFolder + useFileName);
+        }
         #endregion
     }
 }

@@ -245,6 +245,7 @@
             this.buttonOpen.TabIndex = 6;
             this.buttonOpen.Text = "OPEN";
             this.buttonOpen.UseVisualStyleBackColor = false;
+            this.buttonOpen.Click += new System.EventHandler(this.buttonOpen_Click);
             // 
             // buttonSave
             // 
@@ -260,6 +261,7 @@
             this.buttonSave.TabIndex = 7;
             this.buttonSave.Text = "SAVE";
             this.buttonSave.UseVisualStyleBackColor = false;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // label2
             // 
@@ -284,6 +286,7 @@
             this.textBoxName.Size = new System.Drawing.Size(175, 29);
             this.textBoxName.TabIndex = 1;
             this.textBoxName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxName_KeyPress);
+            this.textBoxName.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.textBoxName_MouseDoubleClick);
             this.textBoxName.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxName_Validating);
             // 
             // textBoxDefinition
@@ -487,6 +490,7 @@
             this.Name = "WikiApplicationForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WikiList Application";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WikiApplicationForm_FormClosing);
             this.Load += new System.EventHandler(this.WikiApplicationForm_Load);
             this.statusStripUserMessaging.ResumeLayout(false);
             this.statusStripUserMessaging.PerformLayout();
