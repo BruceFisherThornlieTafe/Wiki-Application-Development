@@ -36,7 +36,7 @@
             this.listViewWiki = new System.Windows.Forms.ListView();
             this.columnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderCategory = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelName = new System.Windows.Forms.Label();
             this.linkLabelDeimosWebsite = new System.Windows.Forms.LinkLabel();
             this.labelWikiTitleLogo = new System.Windows.Forms.Label();
             this.buttonAdd = new System.Windows.Forms.Button();
@@ -45,7 +45,7 @@
             this.buttonSearch = new System.Windows.Forms.Button();
             this.buttonOpen = new System.Windows.Forms.Button();
             this.buttonSave = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
+            this.labelCategory = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
             this.textBoxDefinition = new System.Windows.Forms.TextBox();
             this.comboBoxCategory = new System.Windows.Forms.ComboBox();
@@ -104,7 +104,7 @@
             // 
             // listViewWiki
             // 
-            this.listViewWiki.BackColor = System.Drawing.Color.White;
+            this.listViewWiki.BackColor = System.Drawing.Color.WhiteSmoke;
             this.listViewWiki.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listViewWiki.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeaderName,
@@ -132,18 +132,18 @@
             this.columnHeaderCategory.Text = "Category";
             this.columnHeaderCategory.Width = 140;
             // 
-            // label1
+            // labelName
             // 
-            this.label1.AutoSize = true;
-            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(5, 8);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(61, 24);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "Name";
+            this.labelName.AutoSize = true;
+            this.labelName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
+            this.labelName.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.labelName.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelName.ForeColor = System.Drawing.Color.Black;
+            this.labelName.Location = new System.Drawing.Point(5, 8);
+            this.labelName.Name = "labelName";
+            this.labelName.Size = new System.Drawing.Size(61, 24);
+            this.labelName.TabIndex = 7;
+            this.labelName.Text = "Name";
             // 
             // linkLabelDeimosWebsite
             // 
@@ -275,18 +275,18 @@
             this.buttonSave.UseVisualStyleBackColor = false;
             this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
-            // label2
+            // labelCategory
             // 
-            this.label2.AutoSize = true;
-            this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
-            this.label2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(5, 53);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(85, 24);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Category";
+            this.labelCategory.AutoSize = true;
+            this.labelCategory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
+            this.labelCategory.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.labelCategory.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelCategory.ForeColor = System.Drawing.Color.Black;
+            this.labelCategory.Location = new System.Drawing.Point(5, 53);
+            this.labelCategory.Name = "labelCategory";
+            this.labelCategory.Size = new System.Drawing.Size(85, 24);
+            this.labelCategory.TabIndex = 11;
+            this.labelCategory.Text = "Category";
             // 
             // textBoxName
             // 
@@ -336,9 +336,9 @@
             this.panelWikiInput.Controls.Add(this.labelDefinition);
             this.panelWikiInput.Controls.Add(this.textBoxDefinition);
             this.panelWikiInput.Controls.Add(this.comboBoxCategory);
-            this.panelWikiInput.Controls.Add(this.label2);
+            this.panelWikiInput.Controls.Add(this.labelCategory);
             this.panelWikiInput.Controls.Add(this.textBoxName);
-            this.panelWikiInput.Controls.Add(this.label1);
+            this.panelWikiInput.Controls.Add(this.labelName);
             this.panelWikiInput.Controls.Add(this.panelNameError);
             this.panelWikiInput.Controls.Add(this.panelCategoryError);
             this.panelWikiInput.Controls.Add(this.panelDefinitionError);
@@ -528,7 +528,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelUserMessaging;
         private System.Windows.Forms.TextBox textBoxSearchName;
         private System.Windows.Forms.ListView listViewWiki;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelName;
         private System.Windows.Forms.LinkLabel linkLabelDeimosWebsite;
         private System.Windows.Forms.Label labelWikiTitleLogo;
         private System.Windows.Forms.Button buttonAdd;
@@ -537,7 +537,7 @@
         private System.Windows.Forms.Button buttonSearch;
         private System.Windows.Forms.Button buttonOpen;
         private System.Windows.Forms.Button buttonSave;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelCategory;
         private System.Windows.Forms.TextBox textBoxName;
         private System.Windows.Forms.TextBox textBoxDefinition;
         private System.Windows.Forms.ComboBox comboBoxCategory;

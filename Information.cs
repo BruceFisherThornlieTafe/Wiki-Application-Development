@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 /// <summary>
 /// WikiList Application Information Class
 /// 
-/// © Bruce Fisher P197681
+/// © Bruce Fisher P197681 - Deimos Coding Projects
 /// 20-2-2022 
 /// Version 1.2
 /// 
@@ -15,14 +15,13 @@ using System.Threading.Tasks;
 /// •	As using objects, the .Net Sort method cannot deal with Complex Types i.e., Objects.
 /// •	Therefore, need to define the Class with IComparable which will allow each instance 
 /// 	of the Object defined Attribute to be compared with one another.
-/// 
-/// Implements Serializable
-/// •   Used to convert object to byte stream to write/read for binary file
 /// </summary>
+
+// ### 6.1 Create a separate class file to hold the four data items of the Data Structure (use the Data Structure Matrix as a guide). ###
+// ### Use auto-implemented properties for the fields which must be of type “string”. Save the class as “Information.cs”. ###
 
 namespace WikiApplication
 {
-    [Serializable]
     internal class Information : IComparable<Information>
     {
         private string name;

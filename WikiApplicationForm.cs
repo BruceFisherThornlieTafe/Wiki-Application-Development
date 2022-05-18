@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Globalization;
 
 /// <summary>
 /// Project: WikiList Application
@@ -16,29 +14,9 @@ using System.Windows.Forms;
 /// Fully functional wiki application for categories and definitions
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
-/// © Bruce Fisher P197681
-/// Date: 2/05/2022
-/// Version: v2.5
-/// 
-/// Created:
-/// •   Information Class ✔
-/// •   List WikiList of Information Class ✔
-/// •   Form GUI Layout Design ✔
-/// •   Method for Status Strip Error Messaging ✔
-/// •   Create string Array for ComboBox Category ✔
-/// •   Method to populate ComboBox Category upon Form Load ✔
-/// •   Method for Structure RadioButtons that returns string value from selection ✔
-/// •   Method for Structure RadioButtons that using int to set RadioButtons selection ✔
-/// •   Extra Method for Structure RadioButtons to clear both selections ✔
-/// •   Method to Sort and Display to ListView the WikiList List of Instances of Information Name and Category ✔
-/// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔ ??? exists ???
-/// •   Method for ADD button to add Information to WikiList Include Validation for Form ✔ constructor? ok to use ???
-/// •   Method for User to Select Information from ListView and Display in Form ✔
-/// •   Method for DELETE button to delete Information from WikiList for ListView selection ✔
-/// •   Method for EDIT button to edit information in WikiList for ListView selection ✔
-/// •   Method for SEARCH button to Binary search WikiList for given Name and Display in From ✔
-/// •   Method for double click Name and clears the whole Form ✔
-/// •   Methods for OPEN/CLOSE buttons to open and close files and Upon Form closing Save to default file ✔
+/// © Bruce Fisher P197681 - Deimos Coding Projects
+/// Date: 16/05/2022
+/// Version: v2.7 - Mapping to code
 /// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -48,25 +26,44 @@ using System.Windows.Forms;
 /// https://docs.microsoft.com/en-us/dotnet/desktop/winforms/controls/how-to-group-windows-forms-radiobutton-controls-to-function-as-a-set?view=netframeworkdesktop-4.8#:~:text=You%20group%20radio%20buttons%20by,inside%20panels%20or%20group%20boxes.
 /// </summary>
 
+// ### 6.16 All code is required to be adequately commented. ###
+// ### Map the programming criteria and features to your code/methods by adding comments above the method signatures. ###
+// ### Ensure your code is compliant with the CITEMS coding standards (refer http://www.citems.com.au/). ###
+
 namespace WikiApplication
 {
     public partial class WikiApplicationForm : Form
     {
-        #region Global Variables
+        #region Global Variables ✔
         // Application Version Number
-        string versionNo = "v2.5";
+        const string versionNo = "v2.7";
 
         // Target for link label linkLabelDeimosWebsite
-        string target = "https://deimoscodingprojects.com/";
+        const string target = "https://deimoscodingprojects.com/";
+
+        // ### 6.2 Create a global List<T> of type Information called Wiki. ###
 
         // List to store WikiList Information Class
         List<Information> WikiList = new List<Information>();
 
-        // Category String Array
-        string[] categories = new string[6] {"Array","List", "Tree", "Graphs", "Abstract", "Hash" };
+        // TextInfo based on the "en-US" culture see MSDN link https://docs.microsoft.com/en-us/dotnet/api/system.globalization.textinfo.totitlecase?view=net-6.0
+        // Found best to use as well ToLower() in case User entered Full CAPITILIZED text - as ToTitleCase will leave as is
+        TextInfo textinfo = new CultureInfo("en-US", false).TextInfo;
+
+        //ComboBox Max Array Length
+        const int comboBoxArrayLength = 6;
+
+        // ### 6.4 -> Create and initialise a global string array with the six categories as indicated in the Data Structure Matrix. ###
+        // ### Create a custom method to populate the ComboBox when the Form Load method is called. ### 
+
+        // Category String Array - DEFAULT - in case file for ComboBox not found
+        string[] categories = new string[comboBoxArrayLength] { "Array", "List", "Tree", "Graphs", "Abstract", "Hash" };
+
+        // Category File Name to use
+        const string comboBoxCatergoriesFileName = "comboBoxCatergories.txt";
 
         // Used to prevent Name Displaying duplicate errorProvider messaging when editing Information
-        Boolean nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
+        Boolean editingNotDuplicate = false; // Disable duplicate error messaging
 
         // Used to create default File Name to Open and Save
         const string useFileName = "definitions.bin";
@@ -77,6 +74,9 @@ namespace WikiApplication
 
         // Default files folder used within current Application Executable Path - Allows application to run on anywhere
         string defaultFileFolder = Path.GetDirectoryName(Application.ExecutablePath) + @"\Files\";
+
+        // Default files folder name
+        const string defaultFileFolderName = "Files";
 
         // Used to switch DisplayToLabelMsg text colour
         const string statusBarErrorMsg = "Red"; // Error message
@@ -107,7 +107,10 @@ namespace WikiApplication
             // WikiList Logo Title
             labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
 
-            // prefill Category ComboBox
+            // Read Category File Name into Array catergories
+            openComboBoxTextFile(defaultFileFolder + comboBoxCatergoriesFileName);
+
+            // prefill Category ComboBox from Array categories
             loadCategoryComboBox();
 
             // Clear all Error Red Panels
@@ -118,7 +121,7 @@ namespace WikiApplication
 
             // Focus User Input on Name at start
             textBoxName.Select();
-            textBoxName.Focus(); 
+            textBoxName.Focus();
         }
         #endregion
 
@@ -137,7 +140,12 @@ namespace WikiApplication
             System.Diagnostics.Process.Start(target);
         }
         #endregion
+
         #region loadCategoryComboBox - Load Array into Category ComboBox ✔
+
+        // ### 6.4 Create and initialise a global string array with the six categories as indicated in the Data Structure Matrix. ###
+        // ### -> Create a custom method to populate the ComboBox when the Form Load method is called. ### 
+
         /// <summary>
         /// Fill Category ComboBox with items from Array categories
         /// </summary>
@@ -149,6 +157,7 @@ namespace WikiApplication
             }
         }
         #endregion
+
         #region comboBoxCategory_KeyPress - prevent user input from keypress - Selection from ComboBox Only Possible ✔
         /// <summary>
         /// Prevent ComboBox from manual entry from user
@@ -160,6 +169,7 @@ namespace WikiApplication
             e.Handled = true; // prevent keypress
         }
         #endregion
+
         #region listViewWiki_ColumnWidthChanging - prevent user from moving ListView Columns ✔
         /// <summary>
         /// Prevent Columns Widths from being changed by End User with Event
@@ -174,7 +184,8 @@ namespace WikiApplication
             e.Cancel = true;
         }
         #endregion
-        #region Create Folder "Files" - createFilesFolder ✔
+
+        #region Create Folder defaultFileFolderName - createFilesFolder ✔
         private void createFilesFolder()
         {
             // If "Files" folder does not exist at Executable Path then try to create
@@ -183,19 +194,23 @@ namespace WikiApplication
                 if (!Directory.Exists(filesFolderPath))
                 {
                     Directory.CreateDirectory(filesFolderPath);
-                    MessageBox.Show("System Message: Have Created Sub Folder \"Files\" as did not Exist");
+                    MessageBox.Show("Have Created Sub Folder \"" + defaultFileFolderName + "\" as did not Exist", "System Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (IOException)
             {
-                MessageBox.Show("System Error: Cannot Create Folder " + Path.GetFileName(filesFolderPath));
+                MessageBox.Show("Cannot Create Folder \"" + defaultFileFolderName + "\"!", "SYSTEM ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion
         #endregion
 
-        #region Form Buttons
+        #region Form Buttons ✔
         #region ADD Button ✔
+
+        // ### 6.3 Create a button method to ADD a new item to the list. ###
+        // ### Use a TextBox for the Name input, ComboBox for the Category, Radio group for the Structure and Multiline TextBox for the Definition. ###
+
         /// <summary>
         /// Add to WikiList Information from Form Input and ReDisplay ListView
         /// </summary>
@@ -203,23 +218,31 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonAdd_Click(object sender, EventArgs e)
         {
+            string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
+
             // Check for Duplicate Information Name in WikiList with validName
-            if (!validName(textBoxName.Text))
+            if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())))
                 inCorrectNameError();
-            
-            // Check validity of Form Input and check for Duplicate Information Name with validName then Add Information Form to WikiList as Instance
-            if (validateFormInput() && validName(textBoxName.Text))
+
+            // Check validity of Form Input and check for Duplicate Information Name with validName then Add Information Form to WikiList as Object
+            if (validateFormInput() && validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())))
             {
                 toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
-                // Use Information Constructor to Add Information Instance to WikiList
-                WikiList.Add(new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
+                // Use Information Constructor to Add Information Object to WikiList
+                WikiList.Add(new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
                 clearFormData(); // Clean Up Form
-                DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Added to Wiki List", statusBarUserMsg);
+                DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Added to Wiki List.", statusBarUserMsg);
                 displayWikiInformation(); // Display WikiList to ListView
             }
         }
         #endregion
+
         #region EDIT Button ✔
+
+        // ### 6.8 -> Create a button method that will save the edited record of the currently selected item in the ListView. ###
+        // ### All the changes in the input controls will be written back to the list. ###
+        // ### Display an updated version of the sorted list at the end of this process. ###
+
         /// <summary>
         /// Edit the selected Wiki Information selected from ListView into WikiList
         /// </summary>
@@ -227,11 +250,23 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonEdit_Click(object sender, EventArgs e)
         {
+            clearAllErrorPanels(); // clean up Add error
             try
             {
-                WikiList[listViewWiki.SelectedIndices[0]] = new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
+                string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
+
+                // ### 6.8 Create a button method that will save the edited record of the currently selected item in the ListView. ###
+                // ### -> All the changes in the input controls will be written back to the list. ###
+                // ### Display an updated version of the sorted list at the end of this process. ###
+
+                WikiList[listViewWiki.SelectedIndices[0]] = new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
                 clearFormData(); // clean up form
-                DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Edited in Wiki List", statusBarUserMsg);
+                DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Edited in Wiki List.", statusBarUserMsg);
+
+                // ### 6.8 Create a button method that will save the edited record of the currently selected item in the ListView. ###
+                // ### All the changes in the input controls will be written back to the list. ###
+                // ### -> Display an updated version of the sorted list at the end of this process. ###
+
                 displayWikiInformation(); // Display WikiList to ListView  
             }
             catch
@@ -240,7 +275,13 @@ namespace WikiApplication
             }
         }
         #endregion
+
         #region DELETE Button ✔
+
+        // ### 6.7 -> Create a button method that will delete the currently selected record in the ListView. ###
+        // ### Ensure the user has the option to backout of this action by using a dialog box. ###
+        // ### Display an updated version of the sorted list at the end of this process. ###
+
         /// <summary>
         /// Delete the Information for WikiList Selected from the ListView with user Confirmation
         /// </summary>
@@ -248,24 +289,34 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonDelete_Click(object sender, EventArgs e)
         {
+            clearAllErrorPanels(); // clean up Add error
             try
             {
+                string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
                 // Check that the User has not modified after or entered new Information before current or previous ListView Selection
-                Information compareWith = new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
+                Information compareWith = new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
                 if (!informationMatches(WikiList.ElementAt(listViewWiki.SelectedIndices[0]), compareWith))
                     DisplayToLabelMsg("ERROR: Information no longer Matches current Selection from List!", statusBarErrorMsg);
                 else
                 {
-                    DialogResult DeleteValue = MessageBox.Show("Are you sure you want to Delete this Information?", "Confirmation",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    // ### 6.7 Create a button method that will delete the currently selected record in the ListView. ###
+                    // ### -> Ensure the user has the option to backout of this action by using a dialog box. ###
+                    // ### Display an updated version of the sorted list at the end of this process. ###
+
+                    DialogResult DeleteValue = MessageBox.Show("Are you sure you want to Delete this Information?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     if (DeleteValue == DialogResult.Yes)
                     {
                         WikiList.RemoveAt(listViewWiki.SelectedIndices[0]);
                         clearFormData(); // clean up form
-                        DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Deleted from Wiki List", statusBarUserMsg);
+                        DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Deleted from Wiki List.", statusBarUserMsg);
+
+                        // ### 6.7 Create a button method that will delete the currently selected record in the ListView. ###
+                        // ### Ensure the user has the option to backout of this action by using a dialog box. ###
+                        // ### -> Display an updated version of the sorted list at the end of this process. ###
+
                         displayWikiInformation(); // Display WikiList to ListView
                     }
-                    else DisplayToLabelMsg("User Cancelled Deletion of Information", statusBarUserMsg);
+                    else DisplayToLabelMsg("User Cancelled Deletion of Information.", statusBarUserMsg);
                 }
             }
             catch
@@ -274,7 +325,13 @@ namespace WikiApplication
             }
         }
         #endregion
-        #region SEARCH Button - needs to be done!
+
+        #region SEARCH Button ✔
+
+        /// ### 6.10 -> Create a button method that will use the built-in binary search to find a Data Structure name. ###
+        /// ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+        /// ### At the end of the search process the search input TextBox must be cleared. ###
+
         /// <summary>
         /// Search WikiList for Name given from textBoxSearchName
         /// List does not need to be sorted as done with each change to WikiList when displayed in ListView
@@ -283,13 +340,24 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonSearch_Click(object sender, EventArgs e)
         {
+            clearAllErrorPanels(); // clean up Add error
             if (WikiList.Count != 0)
             {
                 if (!string.IsNullOrWhiteSpace(textBoxSearchName.Text))
                 {
+                    /// ### 6.10 Create a button method that will -> use the built-in binary search to find a Data Structure name. ###
+                    /// ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+                    /// ### At the end of the search process the search input TextBox must be cleared. ###
+
                     Information nameCompare = new Information(); // Instance of Information to pass to BinarySearch
-                    nameCompare.SetName(textBoxSearchName.Text); // Compare with <Information>textBoxSearchName
+                    // Search Text Box Text input converted to lower to allow CAPITALIZED input - then Title Case
+                    nameCompare.SetName(textinfo.ToTitleCase(textBoxSearchName.Text.ToLower())); // Compare with <Information>textBoxSearchName
                     int foundIndex = WikiList.BinarySearch(nameCompare); // Search WikiList for textBoxSearchName
+
+                    /// ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
+                    /// ### -> If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+                    /// ### At the end of the search process the search input TextBox must be cleared. ###
+
                     if (foundIndex > -1) // BinarySearch Returns bitwise complement ~-1 meaning could be less than -1 to support inserting items
                     {
                         clearErrorProviders(); // Clear all Error Providers
@@ -306,21 +374,47 @@ namespace WikiApplication
                                 break;
                         }
                         textBoxDefinition.Text = WikiList[foundIndex].GetDefinition();
-                        // Set ListView Item to Found Item
-                        listViewWiki.Items[foundIndex].Selected = true;
-                        listViewWiki.Focus();
 
-                        DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Found!", statusBarUserMsg);
+                        try
+                        {
+                            // Clear Possible Previous Selected Item - prevents two from being selected
+                            listViewWiki.Items[listViewWiki.SelectedIndices[0]].Selected = false;
+                        }
+                        catch
+                        {
+                            // do nothing - prevent crash when nothing was selected
+                        }
+
+                        /// ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
+                        /// ### If the record is found the associated details will populate the appropriate input controls and -> highlight the name in the ListView. ###
+                        /// ### At the end of the search process the search input TextBox must be cleared. ###
+
+                        // Set ListView Item to Found Item
+                        listViewWiki.Items[foundIndex].Selected = true; // Set selection on List View to found Search Name
+                        listViewWiki.Focus(); // Focus on List View to Highlight in Blue the Selection
+
+                        DisplayToLabelMsg("Information with Name: \"" + textinfo.ToTitleCase(textBoxSearchName.Text.ToLower()) + "\" Found!", statusBarUserMsg);
                     }
-                    else DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" NOT Found!", statusBarUserMsg);
+                    else DisplayToLabelMsg("Information with Name: \"" + textinfo.ToTitleCase(textBoxSearchName.Text.ToLower()) + "\" NOT Found!", statusBarUserMsg);
                 }
                 else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
             }
             else DisplayToLabelMsg("ERROR: Nothing in the Wiki List to Search!", statusBarErrorMsg);
+
+            /// ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
+            /// ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+            /// ### -> At the end of the search process the search input TextBox must be cleared. ###
+
             textBoxSearchName.Clear();
         }
         #endregion
+
         #region SAVE Button ✔
+
+        // ### 6.14 -> Create two buttons for the manual open and save option; ###
+        // ### -> this must use a dialog box to select a file or rename a saved file. ###
+        // ### All Wiki data is stored/retrieved using a binary file format. ###
+
         /// <summary>
         /// Save WikiList to User Selected FileName
         /// </summary>
@@ -343,17 +437,24 @@ namespace WikiApplication
                     userSelectedFileName = saveBinaryDialog.FileName;
                     if (saveBinaryFile(userSelectedFileName))
                         DisplayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Saved.", statusBarUserMsg);
-                    else 
-                        DisplayToLabelMsg("SYSTEM ERROR: Cannot Write data to file " + Path.GetFileName(userSelectedFileName) + "!", statusBarErrorMsg);
+                    else
+                        MessageBox.Show("Cannot Write data to file " + Path.GetFileName(userSelectedFileName) + "!", "SYSTEM ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 if (sr == DialogResult.Cancel)
                 {
                     DisplayToLabelMsg("USER CANCELLED: Did NOT Save Records to a File.", statusBarUserMsg);
                 }
-            } else DisplayToLabelMsg("ERROR: Nothing in List View WikiList to Save!", statusBarErrorMsg);
+            }
+            else DisplayToLabelMsg("ERROR: Nothing in List View WikiList to Save!", statusBarErrorMsg);
         }
         #endregion
+
         #region OPEN Button ✔
+
+        // ### 6.14 -> Create two buttons for the manual open and save option; ###
+        // ### -> this must use a dialog box to select a file or rename a saved file. ###
+        // ### All Wiki data is stored/retrieved using a binary file format. ###
+
         /// <summary>
         /// Open User Selected FileName into WikiList
         /// </summary>
@@ -372,24 +473,17 @@ namespace WikiApplication
             if (sr == DialogResult.OK)
             {
                 userSelectedFileName = openBinaryDialog.FileName; // Use file from User Selected/Entered Filename
-                try
+
+                if (openBinaryFile(userSelectedFileName))
                 {
-                    using (Stream stream = File.Open(userSelectedFileName, FileMode.Open))
-                    {
-                        BinaryFormatter bin = new BinaryFormatter();
-                        WikiList.Clear(); // Clear WikiList
-                        while (stream.Position < stream.Length)
-                        {
-                            WikiList.Add((Information)bin.Deserialize(stream));
-                        }
-                    }
                     displayWikiInformation(); // Display WikiList to ListView
                     clearFormData(); // Clean Up Form
                     DisplayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Opened.", statusBarUserMsg);
                 }
-                catch (IOException)
+                else
                 {
-                    DisplayToLabelMsg("SYSTEM ERROR: Invalid File Format \"" + Path.GetFileName(userSelectedFileName) + "\"!", statusBarErrorMsg);
+                    MessageBox.Show("Invalid File Format \"" + Path.GetFileName(userSelectedFileName) + "\"!", "SYSTEM ERROR",  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DisplayToLabelMsg("ERROR: File \"" + Path.GetFileName(userSelectedFileName) + "\" Not Opened!", statusBarErrorMsg);
                 }
             }
             if (sr == DialogResult.Cancel)
@@ -402,6 +496,11 @@ namespace WikiApplication
 
         #region Structure RadioButtons Utilities ✔
         #region radioButtonStructureGetSelected ✔
+
+        // ### 6.6 Create two methods to highlight and return the values from the Radio button GroupBox. ###
+        // ### -> The first method must return a string value from the selected radio button (Linear or Non-Linear). ###
+        // ### The second method must send an integer index which will highlight an appropriate radio button. ###
+
         /// <summary>
         /// Returns Text from selected Structure Radio Button
         /// If nothing is selected returns Empty String
@@ -423,7 +522,13 @@ namespace WikiApplication
             return radioButtonText;
         }
         #endregion
+
         #region radioButtonStructureSetSelection ✔
+
+        // ### 6.6 Create two methods to highlight and return the values from the Radio button GroupBox. ###
+        // ### The first method must return a string value from the selected radio button (Linear or Non-Linear). ###
+        // ### -> The second method must send an integer index which will highlight an appropriate radio button. ###
+
         /// <summary>
         /// Sets Structure RadioButton from passed integer
         /// As RadioButtons as grouped in a Panel the alternate RadioButton will automatically be deselected
@@ -440,11 +545,12 @@ namespace WikiApplication
                     radioButtonNonLinear.Checked = true;
                     break;
                 default:
-                    DisplayToLabelMsg("System Error: Wrong Selection for Radio Buttons in Code!", statusBarErrorMsg);
+                    MessageBox.Show("Wrong Selection \"" + selection + "\" for Radio Buttons in Code!", "SYSTEM ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     break;
             }
         }
         #endregion
+
         #region radioButtonStructureClearSelections ✔
         /// <summary>
         /// Clears both RadioButtons within Panel Structure
@@ -459,10 +565,21 @@ namespace WikiApplication
 
         #region ListView Utilities ✔
         #region Display WikiList in ListView - displayWikiInformation ✔
+
+        // ### 6.9 Create a single custom method that will sort and then display the Name and Category from the wiki information in the list. ###
+
+        /// <summary>
+        /// Sorts the WikiList using built in Sort and then Displays to ListView
+        /// </summary>
         private void displayWikiInformation()
-        {       
+        {
+
+            // ### 6.9 Create a single custom method that will -> sort and then display the Name and Category from the wiki information in the list. ###
+
             WikiList.Sort(); // Sort WikiList List of Instances of Infomation using CompareTo <Information>Name
             listViewWiki.Items.Clear(); // Clear ListView Items from listViewWiki
+
+            // ### 6.9 Create a single custom method that will sort and then -> display the Name and Category from the wiki information in the list. ###
 
             foreach (var wikiInformation in WikiList)
             {
@@ -479,7 +596,12 @@ namespace WikiApplication
             }
         }
         #endregion
+
         #region Display Data from selected ListView in Form - listViewWiki_MouseClick ✔
+
+        // ### 6.11 -> Create a ListView event so a user can select a Data Structure Name from the list of Names ###
+        // ### and the associated information will be displayed in the related text boxes combo box and radio button. ###
+
         /// <summary>
         /// Load Form with Data from User Selected ListView Item
         /// </summary>
@@ -489,8 +611,11 @@ namespace WikiApplication
         {
             int selectedItem = listViewWiki.SelectedIndices[0]; // Item selected from ListView
 
-            nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
+            editingNotDuplicate = false; // Disable duplicate error messaging
             clearErrorProviders(); // Clear all Error Providers
+
+            // ### 6.11 Create a ListView event so a user can select a Data Structure Name from the list of Names ###
+            // ### -> and the associated information will be displayed in the related text boxes combo box and radio button. ###
 
             // Load Form with Data from ListView Selection
             textBoxName.Text = WikiList[selectedItem].GetName();
@@ -506,12 +631,15 @@ namespace WikiApplication
             }
             textBoxDefinition.Text = WikiList[selectedItem].GetDefinition();
 
-            DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Selected from the List View", statusBarUserMsg);
+            DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Selected from the List View.", statusBarUserMsg);
         }
         #endregion
         #endregion
 
         #region Clear Form upon Double Click textBoxName - textBoxName_MouseDoubleClick ✔
+
+        // ### 6.13 -> Create a double click event on the Name TextBox to clear the TextBboxes, ComboBox and Radio button. ###
+
         /// <summary>
         /// Clear Form with Double Click on textBoxName
         /// </summary>
@@ -524,6 +652,9 @@ namespace WikiApplication
         #endregion
 
         #region Clear Form Data - clearFormData ✔
+
+        // ### 6.12 -> Create a custom method that will clear and reset the TextBboxes, ComboBox and Radio button ###
+
         /// <summary>
         /// Clears all From Input Data and refocuses on Name input
         /// </summary>
@@ -538,40 +669,40 @@ namespace WikiApplication
         }
         #endregion
 
-        #region File IO 
+        #region File IO ✔
         #region Save Binary File - saveBinaryFile ✔
+
+        // ### 6.14 -> Create two buttons for the manual open and save option; ###
+        // ### this must use a dialog box to select a file or rename a saved file. ###
+        // ### -> All Wiki data is stored/retrieved using a binary file format. ###
+
+        /// <summary>
         /// <summary>
         /// Save to Binary File passed fileName
         /// </summary>
         /// <param name="fileName">File Name to Save to</param>
+        /// <returns>Boolean Saved - True, Not Saved - False</returns>
         private Boolean saveBinaryFile(string fileName)
         {
             Boolean fileSaved = true;
             try
             {
-               /* using (var stream = File.Open(fileName, FileMode.Create))
+                using (var stream = File.Open(fileName, FileMode.Create))
                 {
                     using (var writer = new BinaryWriter(stream, Encoding.UTF8, false))
                     {
+                        // Write all Objects Stored in List WikiList
                         foreach (var wikiInformation in WikiList)
                         {
+                            // Write each Object Attribute to file
                             writer.Write(wikiInformation.GetName());
                             writer.Write(wikiInformation.GetCatergory());
                             writer.Write(wikiInformation.GetStructure());
                             writer.Write(wikiInformation.GetDefinition());
                         }
                     }
-                }*/
-                using (Stream stream = File.Open(fileName, FileMode.Create))
-                {
-                    BinaryFormatter bin = new BinaryFormatter();
-                    foreach (var wikiInformation in WikiList)
-                    {
-                        bin.Serialize(stream, wikiInformation);
-                    }
                 }
-                        
-             }
+            }
             catch (IOException)
             {
                 fileSaved = false;
@@ -580,11 +711,107 @@ namespace WikiApplication
             return fileSaved;
         }
         #endregion
+
+        #region Open Binary File - openBinaryFile ✔
+
+        // ### 6.14 -> Create two buttons for the manual open and save option; ###
+        // ### this must use a dialog box to select a file or rename a saved file. ###
+        // ### -> All Wiki data is stored/retrieved using a binary file format. ###
+
+        /// <summary>
+        /// Open to Binary File passed fileName
+        /// </summary>
+        /// <param name="fileName">File Name to Open</param>
+        /// <returns>Boolean Opened - True, Not Opened - False</returns>
+        private Boolean openBinaryFile(string fileName)
+        {
+            Boolean fileOpened = true;
+            try
+            {
+                if (File.Exists(fileName))
+                {
+                    using (var stream = File.Open(fileName, FileMode.Open))
+                    {
+                        using (var reader = new BinaryReader(stream, Encoding.UTF8, false))
+                        {
+                            WikiList.Clear(); // Clear WikiList
+                            while (stream.Position < stream.Length)
+                            {
+                                Information readWiki = new Information(); // temp Instance of Information Read from file
+                                // Read all Attributes from file into temp Information Instance
+                                readWiki.SetName(reader.ReadString());
+                                readWiki.SetCategory(reader.ReadString());
+                                readWiki.SetStructure(reader.ReadString());
+                                readWiki.SetDefinition(reader.ReadString());
+                                WikiList.Add(readWiki); // Store each record Object into List WikiList
+                            }
+                        }
+                    }
+                    displayWikiInformation(); // Display WikiList to ListView
+                    clearFormData(); // Clean Up Form
+                }
+            }
+            catch (IOException)
+            {
+                fileOpened = false;
+            }
+
+            return fileOpened;
+        }
+        #endregion
+
+        #region Open ComboBox Text File - openComboBoxTextFile ✔
+
+        // ### 6.4 -> Create and initialise a global string array with the six categories as indicated in the Data Structure Matrix. ###
+        // ### Create a custom method to populate the ComboBox when the Form Load method is called. ### 
+
+        /// <summary>
+        /// Reads Text File Name passed into ComboBox catergories Array
+        /// </summary>
+        /// <param name="fileName">File Name to Open</param>
+        private void openComboBoxTextFile(String fileName)
+        {
+            int categoriesIndex = 0; // used for String Array categories index
+            // check if the filename exists
+            if (File.Exists(fileName))
+            {
+                // create the reader object
+                StreamReader TextReader = new StreamReader(fileName);
+                // continue to loop and read until the EOF is detected
+                while (!TextReader.EndOfStream)
+                {
+                    try
+                    {
+                        // read each record line for Categories ComboBox
+                        categories[categoriesIndex] = TextReader.ReadLine();
+                        categoriesIndex++; // increment to nex index for array
+                        // Exit Text Read in case File contains more attributes than the length of Array categories
+                        if (categoriesIndex < comboBoxArrayLength)
+                            break;
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Invalid File Format \"" + Path.GetFileName(fileName) + "\"!", "SYSTEM ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                // Close the StreamReader
+                TextReader.Close();
+            }
+            else
+            {
+                MessageBox.Show("ComboBox File \"" + Path.GetFileName(fileName) + "\" does not exist - Using Default Definitions for Categories", "System Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        #endregion
         #endregion
 
         #region Validation Utilities ✔
         #region Validation Utilities - For Wiki Name Input ✔
         #region validName - Prevent Duplicates ✔
+
+        // ### 6.5 Create a custom ValidName method which will take a parameter string value from the Textbox Name and returns a Boolean after checking for duplicates. ###
+        // ### Use the built in List<T> method “Exists” to answer this requirement. ###
+
         /// <summary>
         /// Checks for Duplicate Information Name in Information WikiList
         /// </summary>
@@ -595,6 +822,7 @@ namespace WikiApplication
             return !WikiList.Exists(duplicate => duplicate.GetName() == checkListName);
         }
         #endregion
+
         #region textBoxName_Validating - User Error Messaging ✔
         /// <summary>
         /// Validate textBoxName Input Error Messaging
@@ -606,8 +834,8 @@ namespace WikiApplication
             if (string.IsNullOrWhiteSpace(textBoxName.Text)) // Clear Valid error messaging icon in case Name cleared by user after Valid input and user moves to another input
             {
                 errorProviderNameCorrect.Clear();
-            } 
-            else if (!validName(textBoxName.Text) && !nameModifiedLookForDuplicate) // Name duplicated - else if - now not duplicated clear error messaging
+            }
+            else if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) && !editingNotDuplicate) // Name duplicated - else if - now not duplicated clear error messaging
             {
                 e.Cancel = true; // Prevent other events
                 inCorrectNameError(); // Message User to fix Duplicate Information Name
@@ -621,6 +849,7 @@ namespace WikiApplication
             }
         }
         #endregion
+
         #region textBoxName_KeyPress - Clear Error Messaging ✔
         /// <summary>
         /// On KeyPress for textBoxName Clear all the Error Providers and toolStripStatusLabelUserMessanging
@@ -630,10 +859,11 @@ namespace WikiApplication
         private void textBoxName_KeyPress(object sender, KeyPressEventArgs e)
         {
             clearErrorProviders(); // Clear all Error Providers
-            nameModifiedLookForDuplicate = true; // Display duplicate error messaging
+            editingNotDuplicate = true; // Display duplicate error messaging
         }
         #endregion
-        #region Error Provider Message for Invalid Name - inCorrectError
+
+        #region Error Provider Message for Invalid Name - inCorrectNameError ✔
         /// <summary>
         /// Display errorProvider message and icon
         /// </summary>
@@ -642,7 +872,7 @@ namespace WikiApplication
             textBoxName.Focus(); // Focus for user to correct input
             errorProviderNameCorrect.Clear();
             errorProviderNameInCorrect.SetError(textBoxName, "Name already Exists"); // icon hover error message
-            DisplayToLabelMsg("Error: Information with Name \"" + textBoxName.Text + "\" already Exists!", statusBarErrorMsg);
+            DisplayToLabelMsg("Error: Information with Name \"" + textinfo.ToTitleCase(textBoxName.Text.ToLower()) + "\" already Exists!", statusBarErrorMsg);
         }
 
         #region Clear Error Provider Messages - clearErrorProviders
@@ -659,6 +889,7 @@ namespace WikiApplication
         #endregion
         #endregion
         #endregion
+
         #region Form Validation - validateFormInput ✔
         /// <summary>
         /// Valid All Form input - display error red panels and user messaging for invalid inputs
@@ -698,19 +929,20 @@ namespace WikiApplication
                 formValid = false;
             }
 
-            if (validName(textBoxName.Text))
-                DisplayToLabelMsg("Error: Fill in Form Information for " + userErrorMsg, statusBarErrorMsg);
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())))
+                DisplayToLabelMsg("Error: Fill in Form Information for " + userErrorMsg, statusBarErrorMsg + ".");
 
             return formValid;
         }
         #endregion
+
         #region Compare two Information Instances Attributes - informationMatches ✔
         /// <summary>
         /// Compares Attributes for SelectedIndices Information Instance with Current Form Information created compareWith Instance
         /// </summary>
         /// <param name="selectedInformation">Object which initiated the event</param>
         /// <param name="compareWith">Event data</param>
-        /// <returns></returns>
+        /// <returns>Attributes Changed - True, Attributes Unchanged - False</returns>
         private Boolean informationMatches(Information selectedInformation, Information compareWith)
         {
             return string.Equals(selectedInformation.GetName(), compareWith.GetName())
@@ -719,6 +951,7 @@ namespace WikiApplication
                 && string.Equals(selectedInformation.GetDefinition(), compareWith.GetDefinition());
         }
         #endregion
+
         #region Error Red Panels Utilities ✔
         #region Clear Error Panels Upon Mouse Click ✔
         /// <summary>
@@ -733,13 +966,13 @@ namespace WikiApplication
         }
         private void comboBoxCategory_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
                 panelCategoryError.Visible = false;
             else inCorrectNameError();
         }
         private void panelCategoryError_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
             {
                 panelCategoryError.Visible = false;
                 comboBoxCategory.Focus();
@@ -748,19 +981,19 @@ namespace WikiApplication
         }
         private void radioButtonLinear_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
                 panelStructureError.Visible = false;
             else inCorrectNameError();
         }
         private void radioButtonNonLinear_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
                 panelStructureError.Visible = false;
             else inCorrectNameError();
         }
         private void panelDefinitionError_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
             {
                 panelDefinitionError.Visible = false;
                 textBoxDefinition.Focus();
@@ -768,9 +1001,11 @@ namespace WikiApplication
             else inCorrectNameError();
         }
         #endregion
+
         #region clearAllErrorPanels ✔
         /// <summary>
-        /// Clear all of the error red panels
+        /// Clear all of the error red panels and bring to front at start
+        /// Set to back in Form design Properties to make it easier to edit Form Properties for Text Boxes
         /// </summary>
         private void clearAllErrorPanels()
         {
@@ -779,14 +1014,15 @@ namespace WikiApplication
 
             panelCategoryError.BringToFront();
             panelCategoryError.Visible = false;
-            
+
             panelStructureError.Visible = false;
-            
+
             panelDefinitionError.BringToFront();
             panelDefinitionError.Visible = false;
         }
         #endregion
         #endregion
+
         #region DisplayToLabelMsg - ToolStripStatus User Messaging Utility ✔
         /// <summary>
         /// Displays string with given onto toolStripStatusLabelUserMessaging and flashes 
@@ -826,8 +1062,15 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void WikiApplicationForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (WikiList.Count != 0)
-                saveBinaryFile(defaultFileFolder + useFileName);
+            DialogResult = MessageBox.Show("Are you sure that you would like to close the application?", "Application Closing", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+
+            // If the No button pressed  
+            if (DialogResult == DialogResult.No)
+            {
+                e.Cancel = true; // cancel the closure of the form 
+            } 
+            else if (WikiList.Count != 0)
+                saveBinaryFile(defaultFileFolder + useFileName); // Save WikiList to default binary file name
         }
         #endregion
     }
