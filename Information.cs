@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 /// 
 /// © Bruce Fisher P197681
 /// 20-2-2022 
-/// Version 1.1
+/// Version 1.2
 /// 
 /// Implements IComparable
 /// •	As using objects, the .Net Sort method cannot deal with Complex Types i.e., Objects.
@@ -47,19 +47,19 @@ namespace WikiApplication
         /// <param name="newDefinition">New WikiList definition</param>
         public Information(string newName, string newCategory, string newStructure, string newDefinition)
         {
-            name = newName;
-            category = newCategory;
-            structure = newStructure;
-            definition = newDefinition;
+            SetName(newName);
+            SetCategory(newCategory);
+            SetStructure(newStructure);
+            SetDefinition(newDefinition);
         }
 
         /// <summary>
         ///  Setter for name
         /// </summary>
         /// <param name="name">string to set name</param>
-        public void SetName(string name)
+        public void SetName(string setName)
         {
-            this.name = name;
+            name = setName;
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace WikiApplication
         /// Setter for category
         /// </summary>
         /// <param name="category">string to set category</param>
-        public void SetCategory(string category)
+        public void SetCategory(string setCategory)
         {
-            this.category = category;
+            category = setCategory;
         }
 
         /// <summary>
@@ -93,9 +93,9 @@ namespace WikiApplication
         /// Setter for structure
         /// </summary>
         /// <param name="structure">string to set structure</param>
-        public void SetStructure(string structure)
+        public void SetStructure(string setStructure)
         {
-            this.structure = structure;
+            structure = setStructure;
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace WikiApplication
         /// Setter for definition
         /// </summary>
         /// <param name="definition">string to set definition</param>
-        public void SetDefinition(string definition)
+        public void SetDefinition(string setDefinition)
         {
-            this.definition = definition;
+            definition = setDefinition;
         }
 
         /// <summary>

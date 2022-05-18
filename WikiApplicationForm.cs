@@ -16,8 +16,8 @@ using System.Windows.Forms;
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681
-/// Date: 28/04/2022
-/// Version: v1.8
+/// Date: 29/04/2022
+/// Version: v1.9
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -31,6 +31,7 @@ using System.Windows.Forms;
 /// •   Extra Method for Structure RadioButtons to clear both selections ✔
 /// •   Method to Sort and Display to ListView the WikiList List of Instances of Information Name and Category ✔
 /// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔
+/// •   Method for ADD button to add Information to WikiList Include Validation for Form✔
 ///
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -46,7 +47,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v1.8";
+        string versionNo = "v1.9";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -72,7 +73,7 @@ namespace WikiApplication
         }
         #endregion
 
-        #region WikiApplicationForm_Load
+        #region Form Loads Setup - WikiApplicationForm_Load ✔
         /// <summary>
         /// Unpon form Load Process the following
         /// </summary>
@@ -86,63 +87,56 @@ namespace WikiApplication
             // prefill Category ComboBox
             loadCategoryComboBox();
 
+            // Clear all Error Red Panels
+            clearAllErrorPanels();
+
             // Clear the User Status Strip User Messaging
             toolStripStatusLabelUserMessinging.Text = "";
 
-            // ################################################## TEST DATA FOR LISTVIEW ####################################################################################
-            WikiList.Add(new Information("Heap", "Tree", "Non-Linear", "Aheap of information for definition"));
-            WikiList.Add(new Information("Array", "Array", "Linear", "Aheap of information for definition"));
-            WikiList.Add(new Information("List", "List", "Linear", "Aheap of information for definition"));
-            WikiList.Add(new Information("Self-Balance Tree", "Tree", "Non-Linear", "Aheap of information for definition"));
-
-            displayWikiInformation();
+            // Focus User Input on Name at start
+            textBoxName.Select();
+            textBoxName.Focus(); 
         }
         #endregion
 
-        #region Utilities
-        #region Link Label Deimos Website Click ✔
+        #region Form Buttons
+
+        #region ADD Button ✔
         /// <summary>
-        /// Deimos Coding Projects website link pressed
-        /// 
-        /// Website: https://deimoscodingprojects.com/
-        /// YouTube Channel: https://www.youtube.com/channel/UCSss3BTapsr-cQgmV0NgtTg
+        /// Add to WikiList Information from Form Input and ReDisplay ListView
         /// </summary>
         /// <param name="sender">Object which initiated the event</param>
         /// <param name="e">Event data</param>
-        private void linkLabelDeimosWebsite_Click(object sender, EventArgs e)
+        private void buttonAdd_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(target);
-        }
-        #endregion
-
-        #region loadCategoryComboBox ✔
-        /// <summary>
-        /// Fill Category ComboBox with items from Array categories
-        /// </summary>
-        private void loadCategoryComboBox()
-        {
-            foreach (string item in categories)
+            if (validateFormInput())
             {
-                comboBoxCategory.Items.Add(item);
+                toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+                WikiList.Add(new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
+                DisplayToLabelMsg("Form Data Added to Wiki List and List View", statusBarUserMsg);
+                displayWikiInformation();
+                clearFormData();
             }
         }
         #endregion
 
-        #region radioButtonsStructure ✔
-        #region radioButtonStructureSelected ✔
+        #endregion
+
+        #region Structure RadioButtons Utilities ✔
+        #region radioButtonStructureGetSelected ✔
         /// <summary>
         /// Returns Text from selected Structure Radio Button
         /// If nothing is selected returns Empty String
         /// </summary>
         /// <returns>Text from Selected Struture RadioButton</returns>
-        private string radioButtonStructureSelected()
+        private string radioButtonStructureGetSelected()
         {
             string radioButtonText = ""; // for Text from selected RadioButton
             if (radioButtonLinear.Checked)
             {
                 radioButtonText = radioButtonLinear.Text;
             }
-            
+
             if (radioButtonNonLinear.Checked)
             {
                 radioButtonText = radioButtonNonLinear.Text;
@@ -187,33 +181,15 @@ namespace WikiApplication
         #endregion
         #endregion
 
-        #region validName ✔
-        /// <summary>
-        /// Checks for Duplicate Wiki Name and returns Boolean
-        /// </summary>
-        /// <param name="checkListName">Wiki Name to check for duplicates</param>
-        /// <returns></returns>
-        private Boolean validName(string checkListName)
-        {
-            // Use Lambda Expression to check for duplicates
-            if (WikiList.Exists(duplicate => duplicate.Equals(checkListName)))
-            {
-                DisplayToLabelMsg("Error: Name \"" + checkListName + "\" already Exists in Wiki", statusBarErrorMsg);
-                return false;
-            }
-            else
-                return true;
-        }
-        #endregion
-
-        #region displayWikiInformation ✔
+        #region ListView Utilities
+        #region displayWikiInformation - Display WikiList in ListView ✔
         private void displayWikiInformation()
         {
             // Sort WikiList List of Instances of Infomation
             WikiList.Sort();
 
             // Clear ListView Items from listViewWiki
-            listViewWiki.Items.Clear(); 
+            listViewWiki.Items.Clear();
 
             foreach (var wikiInformation in WikiList)
             {
@@ -230,8 +206,66 @@ namespace WikiApplication
             }
         }
         #endregion
+        #endregion
 
-        #region listViewWiki_ColumnWidthChanging ✔
+        #region Clear Form Data - clearFormData
+        /// <summary>
+        /// Clears all From Input Data and refocuses on Name input
+        /// </summary>
+        private void clearFormData()
+        {
+            textBoxName.Clear(); // Clear TextBox Name
+            errorProviderNameCorrect.Clear(); // Clear Error Provider Icon for Name
+            comboBoxCategory.ResetText(); // Clear ComboBox Category Selection
+            radioButtonStructureClearSelections(); // Clear RadioButtons Structure Selections
+            textBoxDefinition.Clear(); // Clear TextBox Definition
+
+            textBoxName.Focus(); // Focus User Input on Name
+        }
+        #endregion
+
+        #region Form Setup Utilities ✔
+        #region Link Label Deimos Website Click ✔
+        /// <summary>
+        /// Deimos Coding Projects website link pressed
+        /// 
+        /// Website: https://deimoscodingprojects.com/
+        /// YouTube Channel: https://www.youtube.com/channel/UCSss3BTapsr-cQgmV0NgtTg
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void linkLabelDeimosWebsite_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(target);
+        }
+        #endregion
+
+        #region loadCategoryComboBox - Load Array into Category ComboBox ✔
+        /// <summary>
+        /// Fill Category ComboBox with items from Array categories
+        /// </summary>
+        private void loadCategoryComboBox()
+        {
+            foreach (string item in categories)
+            {
+                comboBoxCategory.Items.Add(item);
+            }
+        }
+        #endregion
+
+        #region comboBoxCategory_KeyPress - prevent user input from keypress - Selection from ComboBox Only Possible ✔
+        /// <summary>
+        /// Prevent ComboBox from manual entry from user
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void comboBoxCategory_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true; // prevent keypress
+        }
+        #endregion
+
+        #region listViewWiki_ColumnWidthChanging - prevent user from moving ListView Columns ✔
         /// <summary>
         /// Prevent Columns Widths from being changed by End User with Event
         /// </summary>
@@ -245,8 +279,185 @@ namespace WikiApplication
             e.Cancel = true;
         }
         #endregion
+        #endregion
 
-        #region DisplayToLabelMsg ✔
+        #region Validation Utilities
+        #region Validation Utilities - For Wiki Name Input ✔
+        #region validName - Prevent Duplicates ✔
+        /// <summary>
+        /// Checks for Duplicate Wiki Name and returns Boolean
+        /// </summary>
+        /// <param name="checkListName">Wiki Name to check for duplicates</param>
+        /// <returns>Boolean Valid - True, InValid - False</returns>
+        private Boolean validName(string checkListName)
+        {
+            Boolean noDuplicateFound = true;
+
+            // Check each entry in WikiList for duplicate name
+            foreach (var wikiInformation in WikiList)
+            {
+                if (wikiInformation.GetName().Equals(checkListName))
+                {
+                    noDuplicateFound = false;
+                    break;
+                }
+            }
+            return noDuplicateFound;
+        }
+        #endregion
+
+        #region textBoxName_Validating - User Error Messaging ✔
+        /// <summary>
+        /// Validate textBoxName Input Error Messaging
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void textBoxName_Validating(object sender, CancelEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(textBoxName.Text)) // Clear Valid error messaging icon in case Name cleared by user after Valid input and user moves to another input
+            {
+                errorProviderNameCorrect.Clear();
+            } 
+            else if (!validName(textBoxName.Text)) // Name duplicated - else if - now not duplicated clear error messaging
+            {
+                e.Cancel = true;
+                textBoxName.Focus();
+                errorProviderNameCorrect.Clear();
+                errorProviderNameInCorrect.SetError(textBoxName, "Name already Exists");
+                DisplayToLabelMsg("Error: Name \"" + textBoxName.Text + "\" already Exists!", statusBarErrorMsg);
+            }
+            else
+            {
+                e.Cancel = false;
+                errorProviderNameInCorrect.Clear();
+                errorProviderNameCorrect.SetError(textBoxName, "Valid");
+                toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+            }
+        }
+        #endregion
+
+        #region textBoxName_KeyPress - Clear Error Messaging ✔
+        /// <summary>
+        /// On KeyPress for textBoxName Clear all the Error Providers and toolStripStatusLabelUserMessinging
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void textBoxName_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Clear all error providers on textBoxName
+            errorProviderNameInCorrect.Clear();
+            errorProviderNameInCorrect.Clear();
+            toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+        }
+        #endregion
+        #endregion
+
+        #region Form Validation - validateFormInput - ################# CHECK LAST IF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        /// <summary>
+        /// Valid All Form input - display error red panels and user messaging for invalid inputs
+        /// </summary>
+        /// <returns>Boolean Valid - True, InValid - False</returns>
+        private Boolean validateFormInput()
+        {
+            Boolean formValid = true;
+            string userErrorMsg = "";
+
+            if (string.IsNullOrWhiteSpace(textBoxName.Text))
+            {
+                userErrorMsg = userErrorMsg + "- Name ";
+                panelNameError.Visible = true;
+                errorProviderNameCorrect.Clear();
+                formValid = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(comboBoxCategory.Text))
+            {
+                userErrorMsg = userErrorMsg + "- Category ";
+                panelCategoryError.Visible = true;
+                formValid = false;
+            }
+
+            if (!radioButtonLinear.Checked && !radioButtonNonLinear.Checked)
+            {
+                userErrorMsg = userErrorMsg + "- Struture ";
+                panelStructureError.Visible = true;
+                formValid = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(textBoxDefinition.Text))
+            {
+                userErrorMsg = userErrorMsg + "- Definition";
+                panelDefinitionError.Visible = true;
+                formValid = false;
+            }
+
+            //if (validName(textBoxName.Text))
+            DisplayToLabelMsg("Error: Fill in Form for " + userErrorMsg, statusBarErrorMsg);
+
+            return formValid;
+        }
+        #endregion
+
+        #region Error Red Panels Utilities ✔
+        #region Clear Error Panels Upon Mouse Click ✔
+        /// <summary>
+        /// Clears panelNameError, comboBoxCategory, panelCategoryError, panelDefinitionError
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void panelNameError_MouseClick(object sender, MouseEventArgs e)
+        {
+            panelNameError.Visible = false;
+            textBoxName.Focus();
+        }
+        private void comboBoxCategory_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (validName(textBoxName.Text))
+                panelCategoryError.Visible = false;
+        }
+        private void panelCategoryError_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (validName(textBoxName.Text))
+            {
+                panelCategoryError.Visible = false;
+                comboBoxCategory.Focus();
+            }
+        }
+        private void radioButtonLinear_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (validName(textBoxName.Text))
+                panelStructureError.Visible = false;
+        }
+        private void radioButtonNonLinear_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (validName(textBoxName.Text))
+                panelStructureError.Visible = false;
+        }
+        private void panelDefinitionError_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (validName(textBoxName.Text))
+            {
+                panelDefinitionError.Visible = false;
+                textBoxDefinition.Focus();
+            }
+        }
+        #endregion
+
+        #region clearAllErrorPanels ✔
+        /// <summary>
+        /// Clear all of the error red panels
+        /// </summary>
+        private void clearAllErrorPanels()
+        {
+            panelNameError.Visible = false;
+            panelCategoryError.Visible = false;
+            panelStructureError.Visible = false;
+            panelDefinitionError.Visible = false;
+        }
+        #endregion
+        #endregion
+
+        #region DisplayToLabelMsg - ToolStripStatus User Messaging Utility ✔
         /// <summary>
         /// Displays string with given onto toolStripStatusLabelUserMessinging and flashes 
         /// statusStripUserMessaging to draw attention to user that message has been updated
@@ -279,5 +490,6 @@ namespace WikiApplication
         #endregion
 
         #endregion
+
     }
 }
