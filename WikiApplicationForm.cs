@@ -17,7 +17,7 @@ using System.Windows.Forms;
 /// 
 /// © Bruce Fisher P197681
 /// Date: 30/04/2022
-/// Version: v2.0
+/// Version: v2.1
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -33,6 +33,7 @@ using System.Windows.Forms;
 /// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔
 /// •   Method for ADD button to add Information to WikiList Include Validation for Form ✔
 /// •   Method for User to Select Information from ListView and Display in Form ✔
+/// •   Method for DELETE button to delete Information from WikiList for ListView selection ✔
 /// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -48,7 +49,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v2.0";
+        string versionNo = "v2.1";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -110,13 +111,55 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            if (validateFormInput())
+            // Check for Duplicate Information Name in WikiList with validName
+            if (!validName(textBoxName.Text))
+                inCorrectNameError();
+            
+            // Check validity of Form Input and check for Duplicate Information Name with validName then Add Information Form to WikiList as Instance
+            if (validateFormInput() && validName(textBoxName.Text))
             {
                 toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+                // Use Information Constructor to Add Information Instance to WikiList
                 WikiList.Add(new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
-                DisplayToLabelMsg("Form Data Added to Wiki List and List View", statusBarUserMsg);
-                displayWikiInformation();
+                DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Added to Wiki List", statusBarUserMsg);
+                displayWikiInformation(); // Display WikiList to ListView
                 clearFormData();
+            }
+        }
+        #endregion
+
+        #region DELETE Button
+        /// <summary>
+        /// Delete the Information for WikiList Selected from the ListView with user Confirmation
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Check that the User has not modified after or entered new Information before current or previous ListView Selection
+                Information compareWith = new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
+                if (!informationMatches(WikiList.ElementAt(listViewWiki.SelectedIndices[0]), compareWith))
+                    DisplayToLabelMsg("ERROR: Information no longer Matches current Selection from List", statusBarErrorMsg);
+                else
+                {
+                    DialogResult DeleteValue = MessageBox.Show("Are you sure you want to Delete this Information?", "Confirmation",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (DeleteValue == DialogResult.Yes)
+                    {
+                        WikiList.RemoveAt(listViewWiki.SelectedIndices[0]);
+                        DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Deleted from Wiki List", statusBarUserMsg);
+                        displayWikiInformation();
+                        clearFormData();
+                    }
+                    else
+                        DisplayToLabelMsg("User Cancelled Deletion of Information", statusBarUserMsg);
+                }
+            }
+            catch
+            {
+                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView", statusBarErrorMsg);
             }
         }
         #endregion
@@ -124,6 +167,7 @@ namespace WikiApplication
         #endregion
 
         #region Structure RadioButtons Utilities ✔
+
         #region radioButtonStructureGetSelected ✔
         /// <summary>
         /// Returns Text from selected Structure Radio Button
@@ -180,9 +224,11 @@ namespace WikiApplication
             radioButtonNonLinear.Checked = false;
         }
         #endregion
+
         #endregion
 
         #region ListView Utilities
+
         #region Display WikiList in ListView - displayWikiInformation ✔
         private void displayWikiInformation()
         {
@@ -231,8 +277,11 @@ namespace WikiApplication
                     break;
             }
             textBoxDefinition.Text = WikiList[selectedItem].GetDefinition();
+
+            DisplayToLabelMsg("Information with Name: " + textBoxName.Text + " Selected from the List View", statusBarUserMsg);
         }
         #endregion
+
         #endregion
 
         #region Clear Form Data - clearFormData
@@ -246,12 +295,12 @@ namespace WikiApplication
             comboBoxCategory.ResetText(); // Clear ComboBox Category Selection
             radioButtonStructureClearSelections(); // Clear RadioButtons Structure Selections
             textBoxDefinition.Clear(); // Clear TextBox Definition
-
             textBoxName.Focus(); // Focus User Input on Name
         }
         #endregion
 
         #region Form Setup Utilities ✔
+
         #region Link Label Deimos Website Click ✔
         /// <summary>
         /// Deimos Coding Projects website link pressed
@@ -306,13 +355,16 @@ namespace WikiApplication
             e.Cancel = true;
         }
         #endregion
+
         #endregion
 
-        #region Validation Utilities
+        #region Validation Utilities ✔
+
         #region Validation Utilities - For Wiki Name Input ✔
+
         #region validName - Prevent Duplicates ✔
         /// <summary>
-        /// Checks for Duplicate Wiki Name and returns Boolean
+        /// Checks for Duplicate Information Name in Information WikiList
         /// </summary>
         /// <param name="checkListName">Wiki Name to check for duplicates</param>
         /// <returns>Boolean Valid - True, InValid - False</returns>
@@ -320,7 +372,7 @@ namespace WikiApplication
         {
             Boolean noDuplicateFound = true;
 
-            // Check each entry in WikiList for duplicate name
+            // Check each Information Instance in WikiList for duplicate name
             foreach (var wikiInformation in WikiList)
             {
                 if (wikiInformation.GetName().Equals(checkListName))
@@ -347,17 +399,14 @@ namespace WikiApplication
             } 
             else if (!validName(textBoxName.Text)) // Name duplicated - else if - now not duplicated clear error messaging
             {
-                e.Cancel = true;
-                textBoxName.Focus();
-                errorProviderNameCorrect.Clear();
-                errorProviderNameInCorrect.SetError(textBoxName, "Name already Exists");
-                DisplayToLabelMsg("Error: Name \"" + textBoxName.Text + "\" already Exists!", statusBarErrorMsg);
+                e.Cancel = true; // Prevent other events
+                inCorrectNameError(); // Message User to fix Duplicate Information Name
             }
             else
             {
-                e.Cancel = false;
+                e.Cancel = false; // Allow other events
                 errorProviderNameInCorrect.Clear();
-                errorProviderNameCorrect.SetError(textBoxName, "Valid");
+                errorProviderNameCorrect.SetError(textBoxName, "Valid"); // icon hover user message
                 toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
             }
         }
@@ -377,9 +426,23 @@ namespace WikiApplication
             toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
         }
         #endregion
+
+        #region Error Provider Message for Invalid Name - inCorrectError
+        /// <summary>
+        /// Display errorProvider message and icon
+        /// </summary>
+        private void inCorrectNameError()
+        {
+            textBoxName.Focus(); // Focus for user to correct input
+            errorProviderNameCorrect.Clear();
+            errorProviderNameInCorrect.SetError(textBoxName, "Name already Exists"); // icon hover error message
+            DisplayToLabelMsg("Error: Information with Name \"" + textBoxName.Text + "\" already Exists!", statusBarErrorMsg);
+        }
         #endregion
 
-        #region Form Validation - validateFormInput - ################# CHECK LAST IF!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #endregion
+
+        #region Form Validation - validateFormInput ✔
         /// <summary>
         /// Valid All Form input - display error red panels and user messaging for invalid inputs
         /// </summary>
@@ -418,14 +481,31 @@ namespace WikiApplication
                 formValid = false;
             }
 
-            //if (validName(textBoxName.Text))
-            DisplayToLabelMsg("Error: Fill in Form for " + userErrorMsg, statusBarErrorMsg);
+            if (validName(textBoxName.Text))
+                DisplayToLabelMsg("Error: Fill in Form Information for " + userErrorMsg, statusBarErrorMsg);
 
             return formValid;
         }
         #endregion
 
+        #region Compare two Information Instances Attributes - informationMatches ✔
+        /// <summary>
+        /// Compares Attributes for SelectedIndices Information Instance with Current Form Information created compareWith Instance
+        /// </summary>
+        /// <param name="selectedInformation">Object which initiated the event</param>
+        /// <param name="compareWith">Event data</param>
+        /// <returns></returns>
+        private Boolean informationMatches(Information selectedInformation, Information compareWith)
+        {
+            return string.Equals(selectedInformation.GetName(), compareWith.GetName())
+                && string.Equals(selectedInformation.GetCatergory(), compareWith.GetCatergory())
+                && string.Equals(selectedInformation.GetStructure(), compareWith.GetStructure())
+                && string.Equals(selectedInformation.GetDefinition(), compareWith.GetDefinition());
+        }
+        #endregion
+
         #region Error Red Panels Utilities ✔
+
         #region Clear Error Panels Upon Mouse Click ✔
         /// <summary>
         /// Clears panelNameError, comboBoxCategory, panelCategoryError, panelDefinitionError
@@ -441,6 +521,7 @@ namespace WikiApplication
         {
             if (validName(textBoxName.Text))
                 panelCategoryError.Visible = false;
+            else inCorrectNameError();
         }
         private void panelCategoryError_MouseClick(object sender, MouseEventArgs e)
         {
@@ -449,16 +530,19 @@ namespace WikiApplication
                 panelCategoryError.Visible = false;
                 comboBoxCategory.Focus();
             }
+            else inCorrectNameError();
         }
         private void radioButtonLinear_MouseClick(object sender, MouseEventArgs e)
         {
             if (validName(textBoxName.Text))
                 panelStructureError.Visible = false;
+            else inCorrectNameError();
         }
         private void radioButtonNonLinear_MouseClick(object sender, MouseEventArgs e)
         {
             if (validName(textBoxName.Text))
                 panelStructureError.Visible = false;
+            else inCorrectNameError();
         }
         private void panelDefinitionError_MouseClick(object sender, MouseEventArgs e)
         {
@@ -467,6 +551,7 @@ namespace WikiApplication
                 panelDefinitionError.Visible = false;
                 textBoxDefinition.Focus();
             }
+            else inCorrectNameError();
         }
         #endregion
 
@@ -476,12 +561,19 @@ namespace WikiApplication
         /// </summary>
         private void clearAllErrorPanels()
         {
+            panelNameError.BringToFront();
             panelNameError.Visible = false;
+
+            panelCategoryError.BringToFront();
             panelCategoryError.Visible = false;
+            
             panelStructureError.Visible = false;
+            
+            panelDefinitionError.BringToFront();
             panelDefinitionError.Visible = false;
         }
         #endregion
+        
         #endregion
 
         #region DisplayToLabelMsg - ToolStripStatus User Messaging Utility ✔
@@ -489,12 +581,8 @@ namespace WikiApplication
         /// Displays string with given onto toolStripStatusLabelUserMessinging and flashes 
         /// statusStripUserMessaging to draw attention to user that message has been updated
         /// </summary>
-        /// <param name="message">
-        /// The string to Display in the Tool Label
-        /// </param>
-        /// <param name="colour">
-        /// Colour to set showed message text
-        /// </param>
+        /// <param name="message">The string to Display in the Tool Label</param>
+        /// <param name="colour">Colour to set showed message text</param>
         private void DisplayToLabelMsg(string message, string colour)
         {
             switch (colour)
@@ -514,10 +602,9 @@ namespace WikiApplication
             System.Threading.Thread.Sleep(100); // wait time between visability of statusStripUserMessaging
             statusStripUserMessaging.Visible = true;
         }
-        #endregion
 
         #endregion
-
         
+        #endregion
     }
 }

@@ -50,18 +50,19 @@
             this.textBoxDefinition = new System.Windows.Forms.TextBox();
             this.comboBoxCategory = new System.Windows.Forms.ComboBox();
             this.panelWikiInput = new System.Windows.Forms.Panel();
-            this.panelCategoryError = new System.Windows.Forms.Panel();
-            this.panelNameError = new System.Windows.Forms.Panel();
-            this.panelDefinitionError = new System.Windows.Forms.Panel();
             this.panelStructure = new System.Windows.Forms.Panel();
             this.radioButtonLinear = new System.Windows.Forms.RadioButton();
             this.radioButtonNonLinear = new System.Windows.Forms.RadioButton();
             this.panelStructureError = new System.Windows.Forms.Panel();
             this.labelStructure = new System.Windows.Forms.Label();
             this.labelDefinition = new System.Windows.Forms.Label();
+            this.panelNameError = new System.Windows.Forms.Panel();
+            this.panelCategoryError = new System.Windows.Forms.Panel();
+            this.panelDefinitionError = new System.Windows.Forms.Panel();
             this.panelWikiList = new System.Windows.Forms.Panel();
             this.errorProviderNameInCorrect = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProviderNameCorrect = new System.Windows.Forms.ErrorProvider(this.components);
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.statusStripUserMessaging.SuspendLayout();
             this.panelWikiInput.SuspendLayout();
             this.panelStructure.SuspendLayout();
@@ -212,6 +213,7 @@
             this.buttonDelete.TabIndex = 4;
             this.buttonDelete.Text = "DELETE";
             this.buttonDelete.UseVisualStyleBackColor = false;
+            this.buttonDelete.Click += new System.EventHandler(this.buttonDelete_Click);
             // 
             // buttonSearch
             // 
@@ -310,9 +312,6 @@
             // 
             this.panelWikiInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
             this.panelWikiInput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelWikiInput.Controls.Add(this.panelCategoryError);
-            this.panelWikiInput.Controls.Add(this.panelNameError);
-            this.panelWikiInput.Controls.Add(this.panelDefinitionError);
             this.panelWikiInput.Controls.Add(this.panelStructure);
             this.panelWikiInput.Controls.Add(this.labelStructure);
             this.panelWikiInput.Controls.Add(this.labelDefinition);
@@ -321,43 +320,13 @@
             this.panelWikiInput.Controls.Add(this.label2);
             this.panelWikiInput.Controls.Add(this.textBoxName);
             this.panelWikiInput.Controls.Add(this.label1);
+            this.panelWikiInput.Controls.Add(this.panelNameError);
+            this.panelWikiInput.Controls.Add(this.panelCategoryError);
+            this.panelWikiInput.Controls.Add(this.panelDefinitionError);
             this.panelWikiInput.Location = new System.Drawing.Point(12, 100);
             this.panelWikiInput.Name = "panelWikiInput";
             this.panelWikiInput.Size = new System.Drawing.Size(280, 479);
             this.panelWikiInput.TabIndex = 15;
-            // 
-            // panelCategoryError
-            // 
-            this.panelCategoryError.BackColor = System.Drawing.Color.White;
-            this.panelCategoryError.BackgroundImage = global::WikiApplication.Properties.Resources.CategoryErrorImage;
-            this.panelCategoryError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panelCategoryError.Location = new System.Drawing.Point(98, 50);
-            this.panelCategoryError.Name = "panelCategoryError";
-            this.panelCategoryError.Size = new System.Drawing.Size(158, 32);
-            this.panelCategoryError.TabIndex = 20;
-            this.panelCategoryError.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelCategoryError_MouseClick);
-            // 
-            // panelNameError
-            // 
-            this.panelNameError.BackColor = System.Drawing.Color.White;
-            this.panelNameError.BackgroundImage = global::WikiApplication.Properties.Resources.NameErrorImage;
-            this.panelNameError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panelNameError.Location = new System.Drawing.Point(96, 6);
-            this.panelNameError.Name = "panelNameError";
-            this.panelNameError.Size = new System.Drawing.Size(175, 29);
-            this.panelNameError.TabIndex = 19;
-            this.panelNameError.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelNameError_MouseClick);
-            // 
-            // panelDefinitionError
-            // 
-            this.panelDefinitionError.BackColor = System.Drawing.Color.White;
-            this.panelDefinitionError.BackgroundImage = global::WikiApplication.Properties.Resources.DefinitionErrorImage;
-            this.panelDefinitionError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panelDefinitionError.Location = new System.Drawing.Point(7, 224);
-            this.panelDefinitionError.Name = "panelDefinitionError";
-            this.panelDefinitionError.Size = new System.Drawing.Size(266, 247);
-            this.panelDefinitionError.TabIndex = 22;
-            this.panelDefinitionError.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelDefinitionError_MouseClick);
             // 
             // panelStructure
             // 
@@ -395,7 +364,7 @@
             this.radioButtonNonLinear.Location = new System.Drawing.Point(126, 14);
             this.radioButtonNonLinear.Name = "radioButtonNonLinear";
             this.radioButtonNonLinear.Size = new System.Drawing.Size(122, 28);
-            this.radioButtonNonLinear.TabIndex = 10;
+            this.radioButtonNonLinear.TabIndex = 9;
             this.radioButtonNonLinear.TabStop = true;
             this.radioButtonNonLinear.Text = "Non-Linear";
             this.radioButtonNonLinear.UseVisualStyleBackColor = true;
@@ -408,7 +377,7 @@
             this.panelStructureError.Location = new System.Drawing.Point(-1, -1);
             this.panelStructureError.Name = "panelStructureError";
             this.panelStructureError.Size = new System.Drawing.Size(266, 60);
-            this.panelStructureError.TabIndex = 21;
+            this.panelStructureError.TabIndex = 9;
             // 
             // labelStructure
             // 
@@ -436,6 +405,39 @@
             this.labelDefinition.TabIndex = 16;
             this.labelDefinition.Text = "Definition";
             // 
+            // panelNameError
+            // 
+            this.panelNameError.BackColor = System.Drawing.Color.White;
+            this.panelNameError.BackgroundImage = global::WikiApplication.Properties.Resources.NameErrorImage;
+            this.panelNameError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panelNameError.Location = new System.Drawing.Point(96, 6);
+            this.panelNameError.Name = "panelNameError";
+            this.panelNameError.Size = new System.Drawing.Size(175, 29);
+            this.panelNameError.TabIndex = 19;
+            this.panelNameError.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelNameError_MouseClick);
+            // 
+            // panelCategoryError
+            // 
+            this.panelCategoryError.BackColor = System.Drawing.Color.White;
+            this.panelCategoryError.BackgroundImage = global::WikiApplication.Properties.Resources.CategoryErrorImage;
+            this.panelCategoryError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panelCategoryError.Location = new System.Drawing.Point(98, 50);
+            this.panelCategoryError.Name = "panelCategoryError";
+            this.panelCategoryError.Size = new System.Drawing.Size(158, 32);
+            this.panelCategoryError.TabIndex = 20;
+            this.panelCategoryError.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelCategoryError_MouseClick);
+            // 
+            // panelDefinitionError
+            // 
+            this.panelDefinitionError.BackColor = System.Drawing.Color.White;
+            this.panelDefinitionError.BackgroundImage = global::WikiApplication.Properties.Resources.DefinitionErrorImage;
+            this.panelDefinitionError.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panelDefinitionError.Location = new System.Drawing.Point(7, 224);
+            this.panelDefinitionError.Name = "panelDefinitionError";
+            this.panelDefinitionError.Size = new System.Drawing.Size(266, 247);
+            this.panelDefinitionError.TabIndex = 22;
+            this.panelDefinitionError.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelDefinitionError_MouseClick);
+            // 
             // panelWikiList
             // 
             this.panelWikiList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
@@ -457,6 +459,10 @@
             this.errorProviderNameCorrect.ContainerControl = this;
             this.errorProviderNameCorrect.Icon = ((System.Drawing.Icon)(resources.GetObject("errorProviderNameCorrect.Icon")));
             this.errorProviderNameCorrect.RightToLeft = true;
+            // 
+            // colorDialog1
+            // 
+            this.colorDialog1.Color = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(143)))), ((int)(((byte)(201)))));
             // 
             // WikiApplicationForm
             // 
@@ -532,6 +538,7 @@
         private System.Windows.Forms.Panel panelStructureError;
         private System.Windows.Forms.Panel panelCategoryError;
         private System.Windows.Forms.Panel panelNameError;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
 
