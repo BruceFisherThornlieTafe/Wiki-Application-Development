@@ -99,20 +99,5 @@
   <ItemGroup>
     <None Include="images\Binary Background 5.png" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="images\Error Background.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\DefinitionErrorImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\StructureErrorImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\CategoryErrorImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="images\NameErrorImage.png" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
