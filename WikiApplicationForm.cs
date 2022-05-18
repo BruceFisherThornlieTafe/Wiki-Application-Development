@@ -15,13 +15,14 @@ using System.Windows.Forms;
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681
-/// Date: 25/04/2022
-/// Version: v1.2
+/// Date: 28/04/2022
+/// Version: v1.3
 /// 
 /// Created:
 /// •   Information Class 
 /// •   List Wiki of Information Class
 /// •   Form GUI Layout Design
+/// •   Method for Status Strip Error Messaging
 ///
 /// Refernce for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -44,6 +45,10 @@ namespace WikiApplication
 
         // List to store Wiki Information Class
         List<Information> Wiki = new List<Information>();
+
+        // Used to switch DisplayToLabelMsg text colour
+        const string statusBarErrorMsg = "Red"; // Error message
+        const string statusBarUserMsg = "White"; // User message
 
 
         #endregion
@@ -100,6 +105,41 @@ namespace WikiApplication
         private void textBoxSearchName_Validating(object sender, CancelEventArgs e)
         {
 
+        }
+        #endregion
+
+        #region DisplayToLabelMsg ✔
+
+        // ### Proposed PC: All user interactions must have full error trapping and feedback messaging ###
+
+        /// <summary>
+        /// Displays string with given onto toolStripStatusLabelUserMessinging and flashes 
+        /// statusStripUserMessaging to draw attention to user that message has been updated
+        /// </summary>
+        /// <param name="message">
+        /// The string to Display in the Tool Label
+        /// </param>
+        /// <param name="colour">
+        /// Colour to set showed message text
+        /// </param>
+        private void DisplayToLabelMsg(string message, string colour)
+        {
+            switch (colour)
+            {
+                case "Red":
+                    toolStripStatusLabelUserMessinging.ForeColor = Color.Red;
+                    break;
+                case "White":
+                    toolStripStatusLabelUserMessinging.ForeColor = Color.White;
+                    break;
+            }
+            toolStripStatusLabelUserMessinging.Text = message;
+
+            // Flash statusStripUserMessaging by changing statusStripUserMessaging visable on/ off
+            // to bring attention to error message
+            statusStripUserMessaging.Visible = false;
+            System.Threading.Thread.Sleep(100); // wait time between visability of statusStripUserMessaging
+            statusStripUserMessaging.Visible = true;
         }
         #endregion
     }

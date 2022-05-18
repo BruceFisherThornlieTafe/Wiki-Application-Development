@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WikiApplicationForm));
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusStripUserMessaging = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabelUserMessinging = new System.Windows.Forms.ToolStripStatusLabel();
             this.textBoxSearchName = new System.Windows.Forms.TextBox();
             this.listViewWiki = new System.Windows.Forms.ListView();
@@ -59,7 +59,7 @@
             this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProvider3 = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProvider4 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.statusStrip1.SuspendLayout();
+            this.statusStripUserMessaging.SuspendLayout();
             this.panelWikiInput.SuspendLayout();
             this.panelStructure.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -68,17 +68,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider4)).BeginInit();
             this.SuspendLayout();
             // 
-            // statusStrip1
+            // statusStripUserMessaging
             // 
-            this.statusStrip1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusStripUserMessaging.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.statusStripUserMessaging.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.statusStripUserMessaging.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabelUserMessinging});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 635);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(684, 26);
-            this.statusStrip1.TabIndex = 0;
-            this.statusStrip1.Text = "statusStripUserMesseging";
+            this.statusStripUserMessaging.Location = new System.Drawing.Point(0, 635);
+            this.statusStripUserMessaging.Name = "statusStripUserMessaging";
+            this.statusStripUserMessaging.Size = new System.Drawing.Size(684, 26);
+            this.statusStripUserMessaging.TabIndex = 0;
+            this.statusStripUserMessaging.Text = "statusStripUserMesseging";
             // 
             // toolStripStatusLabelUserMessinging
             // 
@@ -411,14 +411,14 @@
             this.Controls.Add(this.linkLabelDeimosWebsite);
             this.Controls.Add(this.listViewWiki);
             this.Controls.Add(this.textBoxSearchName);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.statusStripUserMessaging);
             this.Controls.Add(this.panelWikiInput);
             this.Controls.Add(this.panelWikiList);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "WikiApplicationForm";
             this.Text = "Wiki Application";
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusStripUserMessaging.ResumeLayout(false);
+            this.statusStripUserMessaging.PerformLayout();
             this.panelWikiInput.ResumeLayout(false);
             this.panelWikiInput.PerformLayout();
             this.panelStructure.ResumeLayout(false);
@@ -434,7 +434,7 @@
 
         #endregion
 
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusStripUserMessaging;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelUserMessinging;
         private System.Windows.Forms.TextBox textBoxSearchName;
         private System.Windows.Forms.ListView listViewWiki;
