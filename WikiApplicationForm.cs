@@ -11,10 +11,11 @@ using System.Windows.Forms;
 /// <summary>
 /// © Bruce Fisher P197681
 /// Date: 25/04/2022
-/// Version: v1.0
+/// Version: v1.1
 /// 
 /// Created:
-/// •   Information Class   
+/// •   Information Class 
+/// •   List Wiki of Information Class
 ///
 /// Project: Wiki Application
 ///
@@ -26,9 +27,21 @@ namespace WikiApplication
 {
     public partial class WikiApplicationForm : Form
     {
+        #region Global Variables
+
+        // List to store Wiki Information Class
+        List<Information> Wiki = new List<Information>();
+
+        #endregion
+
+        #region Initialise Form Components ✔
+        /// <summary>
+        /// Initialises Form Components
+        /// </summary>
         public WikiApplicationForm()
         {
             InitializeComponent();
         }
+        #endregion
     }
 }
