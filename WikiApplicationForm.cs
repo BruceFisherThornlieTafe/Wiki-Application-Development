@@ -17,7 +17,7 @@ using System.Windows.Forms;
 /// 
 /// © Bruce Fisher P197681
 /// Date: 28/04/2022
-/// Version: v1.5
+/// Version: v1.6
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -26,6 +26,9 @@ using System.Windows.Forms;
 /// •   Method for Status Strip Error Messaging ✔
 /// •   Create string Array for ComboBox Category ✔
 /// •   Method to populate ComboBox Category upon Form Load ✔
+/// •   Method for Structure RadioButtons that returns string value from selection ✔
+/// •   Method for Structure RadioButtons that using int to set RadioButtons selection ✔
+/// •   Extra Method for Structure RadioButtons to clear both selections ✔
 ///
 /// Refernce for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -41,7 +44,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v1.4";
+        string versionNo = "v1.6";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -55,8 +58,6 @@ namespace WikiApplication
         // Used to switch DisplayToLabelMsg text colour
         const string statusBarErrorMsg = "Red"; // Error message
         const string statusBarUserMsg = "White"; // User message
-
-
         #endregion
 
         #region Initialise Form Components ✔
@@ -69,6 +70,26 @@ namespace WikiApplication
         }
         #endregion
 
+        #region WikiApplicationForm_Load
+        /// <summary>
+        /// Unpon form Load Process the following
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void WikiApplicationForm_Load(object sender, EventArgs e)
+        {
+            // Wiki Logo Title
+            labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
+
+            // prefill Category ComboBox
+            loadCategoryComboBox();
+
+            // Clear the User Status Strip User Messaging
+            toolStripStatusLabelUserMessinging.Text = "";
+        }
+        #endregion
+
+        #region Utilities
         #region Link Label Deimos Website Click ✔
         /// <summary>
         /// Deimos Coding Projects website link pressed
@@ -84,21 +105,6 @@ namespace WikiApplication
         }
         #endregion
 
-        #region WikiApplicationForm_Load
-        /// <summary>
-        /// Unpon form Load Process the following
-        /// </summary>
-        /// <param name="sender">Object which initiated the event</param>
-        /// <param name="e">Event data</param>
-        private void WikiApplicationForm_Load(object sender, EventArgs e)
-        {
-            // Wiki Logo Title
-            labelWikiTitleLogo.Text = "Wiki Application " + versionNo;
-
-            loadCategoryComboBox(); // prefill Category ComboBox
-        }
-        #endregion
-
         #region loadCategoryComboBox ✔
         /// <summary>
         /// Fill Category ComboBox with items from Array categories
@@ -110,6 +116,65 @@ namespace WikiApplication
                 comboBoxCategory.Items.Add(item);
             }
         }
+        #endregion
+
+        #region radioButtonsStructure ✔
+        #region radioButtonStructureSelected ✔
+        /// <summary>
+        /// Returns Text from selected Structure Radio Button
+        /// If nothing is selected returns Empty String
+        /// </summary>
+        /// <returns>Text from Selected Struture RadioButton</returns>
+        private string radioButtonStructureSelected()
+        {
+            string radioButtonText = ""; // Text from selected RadioButton
+            if (radioButtonLinear.Checked)
+            {
+                radioButtonText = radioButtonLinear.Text;
+            }
+            
+            if (radioButtonNonLinear.Checked)
+            {
+                radioButtonText = radioButtonNonLinear.Text;
+            }
+
+            return radioButtonText;
+        }
+        #endregion
+
+        #region radioButtonStructureSetSelection ✔
+        /// <summary>
+        /// Sets Structure RadioButton from passed integer
+        /// As RadioButtons as grouped in a Panel the alternate RadioButton will automatically be deselected
+        /// </summary>
+        /// <param name="selection">RadioButton "selection" 1 = Linear, 2 = NonLinear</param>
+        private void radioButtonStructureSetSelection(int selection)
+        {
+            switch (selection)
+            {
+                case 1:
+                    radioButtonLinear.Checked = true;
+                    break;
+                case 2:
+                    radioButtonNonLinear.Checked = true;
+                    break;
+                default:
+                    DisplayToLabelMsg("System Error: Wrong Selection for Radio Buttons in Code!", statusBarErrorMsg);
+                    break;
+            }
+        }
+        #endregion
+
+        #region radioButtonStructureClearSelections ✔
+        /// <summary>
+        /// Clears both RadioButtons with Panel Structure
+        /// </summary>
+        private void radioButtonStructureClearSelections()
+        {
+            radioButtonLinear.Checked = false;
+            radioButtonNonLinear.Checked = false;
+        }
+        #endregion
         #endregion
 
         #region Validation Error Provider Events
@@ -140,9 +205,6 @@ namespace WikiApplication
         #endregion
 
         #region DisplayToLabelMsg ✔
-
-        // ### Proposed PC: All user interactions must have full error trapping and feedback messaging ###
-
         /// <summary>
         /// Displays string with given onto toolStripStatusLabelUserMessinging and flashes 
         /// statusStripUserMessaging to draw attention to user that message has been updated
@@ -173,7 +235,6 @@ namespace WikiApplication
             statusStripUserMessaging.Visible = true;
         }
         #endregion
-
-        
+        #endregion
     }
 }

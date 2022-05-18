@@ -74,18 +74,18 @@
             this.statusStripUserMessaging.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStripUserMessaging.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabelUserMessinging});
-            this.statusStripUserMessaging.Location = new System.Drawing.Point(0, 635);
+            this.statusStripUserMessaging.Location = new System.Drawing.Point(0, 631);
             this.statusStripUserMessaging.Name = "statusStripUserMessaging";
-            this.statusStripUserMessaging.Size = new System.Drawing.Size(684, 26);
+            this.statusStripUserMessaging.Size = new System.Drawing.Size(684, 30);
             this.statusStripUserMessaging.TabIndex = 0;
             this.statusStripUserMessaging.Text = "statusStripUserMesseging";
             // 
             // toolStripStatusLabelUserMessinging
             // 
-            this.toolStripStatusLabelUserMessinging.Font = new System.Drawing.Font("Segoe UI", 12F);
+            this.toolStripStatusLabelUserMessinging.Font = new System.Drawing.Font("Segoe UI", 14F);
             this.toolStripStatusLabelUserMessinging.ForeColor = System.Drawing.SystemColors.ButtonFace;
             this.toolStripStatusLabelUserMessinging.Name = "toolStripStatusLabelUserMessinging";
-            this.toolStripStatusLabelUserMessinging.Size = new System.Drawing.Size(260, 21);
+            this.toolStripStatusLabelUserMessinging.Size = new System.Drawing.Size(313, 25);
             this.toolStripStatusLabelUserMessinging.Text = "toolStripStatusLabelUserMessinging";
             // 
             // textBoxSearchName
@@ -151,8 +151,9 @@
             this.labelWikiTitleLogo.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelWikiTitleLogo.Location = new System.Drawing.Point(52, 8);
             this.labelWikiTitleLogo.Name = "labelWikiTitleLogo";
-            this.labelWikiTitleLogo.Size = new System.Drawing.Size(0, 24);
+            this.labelWikiTitleLogo.Size = new System.Drawing.Size(252, 24);
             this.labelWikiTitleLogo.TabIndex = 10;
+            this.labelWikiTitleLogo.Text = "Wiki Title Logo goes Here";
             // 
             // buttonAdd
             // 
