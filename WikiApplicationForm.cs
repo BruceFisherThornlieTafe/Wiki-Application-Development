@@ -17,7 +17,7 @@ using System.Windows.Forms;
 /// 
 /// © Bruce Fisher P197681
 /// Date: 28/04/2022
-/// Version: v1.7
+/// Version: v1.8
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -30,6 +30,7 @@ using System.Windows.Forms;
 /// •   Method for Structure RadioButtons that using int to set RadioButtons selection ✔
 /// •   Extra Method for Structure RadioButtons to clear both selections ✔
 /// •   Method to Sort and Display to ListView the WikiList List of Instances of Information Name and Category ✔
+/// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔
 ///
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -45,7 +46,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v1.7";
+        string versionNo = "v1.8";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -136,7 +137,7 @@ namespace WikiApplication
         /// <returns>Text from Selected Struture RadioButton</returns>
         private string radioButtonStructureSelected()
         {
-            string radioButtonText = ""; // Text from selected RadioButton
+            string radioButtonText = ""; // for Text from selected RadioButton
             if (radioButtonLinear.Checked)
             {
                 radioButtonText = radioButtonLinear.Text;
@@ -176,7 +177,7 @@ namespace WikiApplication
 
         #region radioButtonStructureClearSelections ✔
         /// <summary>
-        /// Clears both RadioButtons with Panel Structure
+        /// Clears both RadioButtons within Panel Structure
         /// </summary>
         private void radioButtonStructureClearSelections()
         {
@@ -184,6 +185,25 @@ namespace WikiApplication
             radioButtonNonLinear.Checked = false;
         }
         #endregion
+        #endregion
+
+        #region validName ✔
+        /// <summary>
+        /// Checks for Duplicate Wiki Name and returns Boolean
+        /// </summary>
+        /// <param name="checkListName">Wiki Name to check for duplicates</param>
+        /// <returns></returns>
+        private Boolean validName(string checkListName)
+        {
+            // Use Lambda Expression to check for duplicates
+            if (WikiList.Exists(duplicate => duplicate.Equals(checkListName)))
+            {
+                DisplayToLabelMsg("Error: Name \"" + checkListName + "\" already Exists in Wiki", statusBarErrorMsg);
+                return false;
+            }
+            else
+                return true;
+        }
         #endregion
 
         #region displayWikiInformation ✔
@@ -250,7 +270,7 @@ namespace WikiApplication
             }
             toolStripStatusLabelUserMessinging.Text = message;
 
-            // Flash statusStripUserMessaging by changing statusStripUserMessaging visable on/ off
+            // Flash statusStripUserMessaging by changing statusStripUserMessaging visable on/off
             // to bring attention to error message
             statusStripUserMessaging.Visible = false;
             System.Threading.Thread.Sleep(100); // wait time between visability of statusStripUserMessaging
