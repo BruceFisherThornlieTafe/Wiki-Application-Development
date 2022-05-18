@@ -63,6 +63,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="WikiApplicationForm.resx">
       <DependentUpon>WikiApplicationForm.cs</DependentUpon>
@@ -79,6 +80,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\Binary Background.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\Deimos Coding Projects LOGO ROUND.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\Binary Background - Deimos Coding Projects.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\Binary Background - Deimos Coding Projects 2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\Binary Background - Deimos Coding Projects 3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\Binary Background 5.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
