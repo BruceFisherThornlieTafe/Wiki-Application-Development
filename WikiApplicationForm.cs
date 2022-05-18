@@ -16,8 +16,8 @@ using System.Windows.Forms;
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681
-/// Date: 30/04/2022
-/// Version: v2.1
+/// Date: 1/05/2022
+/// Version: v2.2
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -34,6 +34,7 @@ using System.Windows.Forms;
 /// •   Method for ADD button to add Information to WikiList Include Validation for Form ✔
 /// •   Method for User to Select Information from ListView and Display in Form ✔
 /// •   Method for DELETE button to delete Information from WikiList for ListView selection ✔
+/// •   Method for EDIT button to edit information in WikiList for ListView selection ✔
 /// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
@@ -49,7 +50,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v2.1";
+        string versionNo = "v2.2";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -59,6 +60,9 @@ namespace WikiApplication
 
         // Category String Array
         string[] categories = new string[6] {"Array","List", "Tree", "Graphs", "Abstract", "Hash" };
+
+        // Used to prevent Name Displaying duplicate errorProvider messaging when editing Information
+        Boolean nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
 
         // Used to switch DisplayToLabelMsg text colour
         const string statusBarErrorMsg = "Red"; // Error message
@@ -123,12 +127,34 @@ namespace WikiApplication
                 WikiList.Add(new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
                 DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Added to Wiki List", statusBarUserMsg);
                 displayWikiInformation(); // Display WikiList to ListView
-                clearFormData();
+                clearFormData(); // Clean Up Form
             }
         }
         #endregion
 
-        #region DELETE Button
+        #region EDIT Button ✔
+        /// <summary>
+        /// Edit the selected Wiki Information from ListView into WikiList
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void buttonEdit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                WikiList[listViewWiki.SelectedIndices[0]] = new Information(textBoxName.Text, comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
+                DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Edited in Wiki List", statusBarUserMsg);
+                displayWikiInformation(); // Display WikiList to ListView
+                clearFormData(); // clean up form
+            }
+            catch
+            {
+                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView", statusBarErrorMsg);
+            }
+        }
+        #endregion
+
+        #region DELETE Button ✔
         /// <summary>
         /// Delete the Information for WikiList Selected from the ListView with user Confirmation
         /// </summary>
@@ -150,8 +176,8 @@ namespace WikiApplication
                     {
                         WikiList.RemoveAt(listViewWiki.SelectedIndices[0]);
                         DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Deleted from Wiki List", statusBarUserMsg);
-                        displayWikiInformation();
-                        clearFormData();
+                        displayWikiInformation(); // Display WikiList to ListView
+                        clearFormData(); // clean up form
                     }
                     else
                         DisplayToLabelMsg("User Cancelled Deletion of Information", statusBarUserMsg);
@@ -227,16 +253,13 @@ namespace WikiApplication
 
         #endregion
 
-        #region ListView Utilities
+        #region ListView Utilities ✔
 
         #region Display WikiList in ListView - displayWikiInformation ✔
         private void displayWikiInformation()
-        {
-            // Sort WikiList List of Instances of Infomation
-            WikiList.Sort();
-
-            // Clear ListView Items from listViewWiki
-            listViewWiki.Items.Clear();
+        {       
+            WikiList.Sort(); // Sort WikiList List of Instances of Infomation   
+            listViewWiki.Items.Clear(); // Clear ListView Items from listViewWiki
 
             foreach (var wikiInformation in WikiList)
             {
@@ -263,6 +286,9 @@ namespace WikiApplication
         private void listViewWiki_MouseClick(object sender, MouseEventArgs e)
         {
             int selectedItem = listViewWiki.SelectedIndices[0];
+
+            nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
+            clearErrorProviders(); // Clear all Error Providers
 
             // Load Form with Data from ListView Selection
             textBoxName.Text = WikiList[selectedItem].GetName();
@@ -291,11 +317,11 @@ namespace WikiApplication
         private void clearFormData()
         {
             textBoxName.Clear(); // Clear TextBox Name
-            errorProviderNameCorrect.Clear(); // Clear Error Provider Icon for Name
             comboBoxCategory.ResetText(); // Clear ComboBox Category Selection
             radioButtonStructureClearSelections(); // Clear RadioButtons Structure Selections
             textBoxDefinition.Clear(); // Clear TextBox Definition
             textBoxName.Focus(); // Focus User Input on Name
+            clearErrorProviders(); // clear all Error Messaging
         }
         #endregion
 
@@ -397,7 +423,7 @@ namespace WikiApplication
             {
                 errorProviderNameCorrect.Clear();
             } 
-            else if (!validName(textBoxName.Text)) // Name duplicated - else if - now not duplicated clear error messaging
+            else if (!validName(textBoxName.Text) && !nameModifiedLookForDuplicate) // Name duplicated - else if - now not duplicated clear error messaging
             {
                 e.Cancel = true; // Prevent other events
                 inCorrectNameError(); // Message User to fix Duplicate Information Name
@@ -420,10 +446,8 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void textBoxName_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Clear all error providers on textBoxName
-            errorProviderNameInCorrect.Clear();
-            errorProviderNameInCorrect.Clear();
-            toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+            clearErrorProviders(); // Clear all Error Providers
+            nameModifiedLookForDuplicate = true; // Display duplicate error messaging
         }
         #endregion
 
@@ -438,6 +462,19 @@ namespace WikiApplication
             errorProviderNameInCorrect.SetError(textBoxName, "Name already Exists"); // icon hover error message
             DisplayToLabelMsg("Error: Information with Name \"" + textBoxName.Text + "\" already Exists!", statusBarErrorMsg);
         }
+
+        #region Clear Error Provider Messages - clearErrorProviders
+        /// <summary>
+        /// Clear all Error Providers and User Messaging
+        /// </summary>
+        private void clearErrorProviders()
+        {
+            // Clear all error providers on textBoxName
+            errorProviderNameInCorrect.Clear();
+            errorProviderNameCorrect.Clear();
+            toolStripStatusLabelUserMessinging.Text = ""; // Clear the User Status Strip User Messaging
+        }
+        #endregion
         #endregion
 
         #endregion
@@ -519,13 +556,13 @@ namespace WikiApplication
         }
         private void comboBoxCategory_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text))
+            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
                 panelCategoryError.Visible = false;
             else inCorrectNameError();
         }
         private void panelCategoryError_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text))
+            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
             {
                 panelCategoryError.Visible = false;
                 comboBoxCategory.Focus();
@@ -534,19 +571,19 @@ namespace WikiApplication
         }
         private void radioButtonLinear_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text))
+            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
                 panelStructureError.Visible = false;
             else inCorrectNameError();
         }
         private void radioButtonNonLinear_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text))
+            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
                 panelStructureError.Visible = false;
             else inCorrectNameError();
         }
         private void panelDefinitionError_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textBoxName.Text))
+            if (validName(textBoxName.Text) || !nameModifiedLookForDuplicate)
             {
                 panelDefinitionError.Visible = false;
                 textBoxDefinition.Focus();
@@ -604,7 +641,7 @@ namespace WikiApplication
         }
 
         #endregion
-        
+
         #endregion
     }
 }
