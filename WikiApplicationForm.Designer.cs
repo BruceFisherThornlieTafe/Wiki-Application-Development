@@ -116,6 +116,7 @@
             this.listViewWiki.UseCompatibleStateImageBehavior = false;
             this.listViewWiki.View = System.Windows.Forms.View.Details;
             this.listViewWiki.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listViewWiki_ColumnWidthChanging);
+            this.listViewWiki.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listViewWiki_MouseClick);
             // 
             // columnHeaderName
             // 

@@ -16,8 +16,8 @@ using System.Windows.Forms;
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681
-/// Date: 29/04/2022
-/// Version: v1.9
+/// Date: 30/04/2022
+/// Version: v2.0
 /// 
 /// Created:
 /// •   Information Class ✔
@@ -31,8 +31,9 @@ using System.Windows.Forms;
 /// •   Extra Method for Structure RadioButtons to clear both selections ✔
 /// •   Method to Sort and Display to ListView the WikiList List of Instances of Information Name and Category ✔
 /// •   Method for New Name Entry to check for Duplicate Name in Wiki ✔
-/// •   Method for ADD button to add Information to WikiList Include Validation for Form✔
-///
+/// •   Method for ADD button to add Information to WikiList Include Validation for Form ✔
+/// •   Method for User to Select Information from ListView and Display in Form ✔
+/// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
 /// How to: Group Windows Forms RadioButton Controls to Function as a Set
 /// To group RadioButton controls as a set to function independently of other sets
@@ -47,7 +48,7 @@ namespace WikiApplication
     {
         #region Global Variables
         // Application Version Number
-        string versionNo = "v1.9";
+        string versionNo = "v2.0";
 
         // Target for link label linkLabelDeimosWebsite
         string target = "https://deimoscodingprojects.com/";
@@ -182,7 +183,7 @@ namespace WikiApplication
         #endregion
 
         #region ListView Utilities
-        #region displayWikiInformation - Display WikiList in ListView ✔
+        #region Display WikiList in ListView - displayWikiInformation ✔
         private void displayWikiInformation()
         {
             // Sort WikiList List of Instances of Infomation
@@ -204,6 +205,32 @@ namespace WikiApplication
                 // add the list view row of items to listViewWiki
                 listViewWiki.Items.Add(listViewItem);
             }
+        }
+        #endregion
+
+        #region Display Data from selected ListView in Form - listViewWiki_MouseClick ✔
+        /// <summary>
+        /// Load Form with Data from User Selected ListView Item
+        /// </summary>
+        /// <param name="sender">Object which initiated the event</param>
+        /// <param name="e">Event data</param>
+        private void listViewWiki_MouseClick(object sender, MouseEventArgs e)
+        {
+            int selectedItem = listViewWiki.SelectedIndices[0];
+
+            // Load Form with Data from ListView Selection
+            textBoxName.Text = WikiList[selectedItem].GetName();
+            comboBoxCategory.Text = WikiList[selectedItem].GetCatergory();
+            switch (WikiList[selectedItem].GetStructure())
+            {
+                case "Linear":
+                    radioButtonStructureSetSelection(1);
+                    break;
+                case "Non-Linear":
+                    radioButtonStructureSetSelection(2);
+                    break;
+            }
+            textBoxDefinition.Text = WikiList[selectedItem].GetDefinition();
         }
         #endregion
         #endregion
@@ -491,5 +518,6 @@ namespace WikiApplication
 
         #endregion
 
+        
     }
 }
