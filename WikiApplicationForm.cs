@@ -15,7 +15,11 @@ using System.Globalization;
 /// for Data Structures for CITE Managed Services junior programmers.
 /// 
 /// © Bruce Fisher P197681 - Deimos Coding Projects
+<<<<<<< Updated upstream
 /// Date: 16/05/2022
+=======
+///  Date: 16/05/2022
+>>>>>>> Stashed changes
 /// Version: v2.7 - Mapping to code
 /// 
 /// Reference for Radio Buttons used Panel instead of Grouped Box as looks nicer on form adheres to MSDN Standard.
@@ -253,6 +257,7 @@ namespace WikiApplication
             clearAllErrorPanels(); // clean up Add error
             try
             {
+<<<<<<< Updated upstream
                 string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
 
                 // ### 6.8 Create a button method that will save the edited record of the currently selected item in the ListView. ###
@@ -268,6 +273,31 @@ namespace WikiApplication
                 // ### -> Display an updated version of the sorted list at the end of this process. ###
 
                 displayWikiInformation(); // Display WikiList to ListView  
+=======
+                // Store Selected Wiki Information for Name Selected from the list to output for messaging
+                string oldTextBoxNameContents = WikiList.ElementAt(listViewWiki.SelectedIndices[0]).GetName(); // attempt to store - force try catch - user selected nothing from List View
+                
+                // Check for Duplicate Information Name in WikiList with validName
+                if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) && nameModifiedLookForDuplicate)
+                    inCorrectNameError();
+                else if (validateFormInput() && (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate))
+                {
+
+                    // ### 6.8 Create a button method that will save the edited record of the currently selected item in the ListView. ###
+                    // ### -> All the changes in the input controls will be written back to the list. ###
+                    // ### Display an updated version of the sorted list at the end of this process. ###
+
+                    WikiList[listViewWiki.SelectedIndices[0]] = new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
+                    clearFormData(); // clean up form
+                    displayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Edited in Wiki List.", statusBarUserMsg);
+
+                    // ### 6.8 Create a button method that will save the edited record of the currently selected item in the ListView. ###
+                    // ### All the changes in the input controls will be written back to the list. ###
+                    // ### -> Display an updated version of the sorted list at the end of this process. ###
+
+                    displayWikiInformation(); // Display WikiList to ListView  
+                }
+>>>>>>> Stashed changes
             }
             catch
             {
@@ -308,7 +338,11 @@ namespace WikiApplication
                     {
                         WikiList.RemoveAt(listViewWiki.SelectedIndices[0]);
                         clearFormData(); // clean up form
+<<<<<<< Updated upstream
                         DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Deleted from Wiki List.", statusBarUserMsg);
+=======
+                        displayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Deleted from Wiki List.", statusBarUserMsg);
+>>>>>>> Stashed changes
 
                         // ### 6.7 Create a button method that will delete the currently selected record in the ListView. ###
                         // ### Ensure the user has the option to backout of this action by using a dialog box. ###
@@ -328,10 +362,17 @@ namespace WikiApplication
 
         #region SEARCH Button ✔
 
+<<<<<<< Updated upstream
         /// ### 6.10 -> Create a button method that will use the built-in binary search to find a Data Structure name. ###
         /// ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
         /// ### At the end of the search process the search input TextBox must be cleared. ###
 
+=======
+        // ### 6.10 -> Create a button method that will use the built-in binary search to find a Data Structure name. ###
+        // ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+        // ### At the end of the search process the search input TextBox must be cleared. ###
+ 
+>>>>>>> Stashed changes
         /// <summary>
         /// Search WikiList for Name given from textBoxSearchName
         /// List does not need to be sorted as done with each change to WikiList when displayed in ListView
@@ -345,19 +386,33 @@ namespace WikiApplication
             {
                 if (!string.IsNullOrWhiteSpace(textBoxSearchName.Text))
                 {
+<<<<<<< Updated upstream
                     /// ### 6.10 Create a button method that will -> use the built-in binary search to find a Data Structure name. ###
                     /// ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
                     /// ### At the end of the search process the search input TextBox must be cleared. ###
 
+=======
+                    // ### 6.10 Create a button method that will -> use the built-in binary search to find a Data Structure name. ###
+                    // ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+                    // ### At the end of the search process the search input TextBox must be cleared. ###
+                    
+>>>>>>> Stashed changes
                     Information nameCompare = new Information(); // Instance of Information to pass to BinarySearch
                     // Search Text Box Text input converted to lower to allow CAPITALIZED input - then Title Case
                     nameCompare.SetName(textinfo.ToTitleCase(textBoxSearchName.Text.ToLower())); // Compare with <Information>textBoxSearchName
                     int foundIndex = WikiList.BinarySearch(nameCompare); // Search WikiList for textBoxSearchName
 
+<<<<<<< Updated upstream
                     /// ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
                     /// ### -> If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
                     /// ### At the end of the search process the search input TextBox must be cleared. ###
 
+=======
+                    // ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
+                    // ### -> If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+                    // ### At the end of the search process the search input TextBox must be cleared. ###
+                    
+>>>>>>> Stashed changes
                     if (foundIndex > -1) // BinarySearch Returns bitwise complement ~-1 meaning could be less than -1 to support inserting items
                     {
                         clearErrorProviders(); // Clear all Error Providers
@@ -385,10 +440,17 @@ namespace WikiApplication
                             // do nothing - prevent crash when nothing was selected
                         }
 
+<<<<<<< Updated upstream
                         /// ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
                         /// ### If the record is found the associated details will populate the appropriate input controls and -> highlight the name in the ListView. ###
                         /// ### At the end of the search process the search input TextBox must be cleared. ###
 
+=======
+                        // ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
+                        // ### If the record is found the associated details will populate the appropriate input controls and -> highlight the name in the ListView. ###
+                        // ### At the end of the search process the search input TextBox must be cleared. ###
+                        
+>>>>>>> Stashed changes
                         // Set ListView Item to Found Item
                         listViewWiki.Items[foundIndex].Selected = true; // Set selection on List View to found Search Name
                         listViewWiki.Focus(); // Focus on List View to Highlight in Blue the Selection
@@ -399,12 +461,21 @@ namespace WikiApplication
                 }
                 else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
             }
+<<<<<<< Updated upstream
             else DisplayToLabelMsg("ERROR: Nothing in the Wiki List to Search!", statusBarErrorMsg);
 
             /// ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
             /// ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
             /// ### -> At the end of the search process the search input TextBox must be cleared. ###
 
+=======
+            else displayToLabelMsg("ERROR: Nothing in the Wiki List to Search!", statusBarErrorMsg);
+
+            // ### 6.10 Create a button method that will use the built-in binary search to find a Data Structure name. ###
+            // ### If the record is found the associated details will populate the appropriate input controls and highlight the name in the ListView. ###
+            // ### -> At the end of the search process the search input TextBox must be cleared. ###
+            
+>>>>>>> Stashed changes
             textBoxSearchName.Clear();
         }
         #endregion
@@ -552,6 +623,9 @@ namespace WikiApplication
         #endregion
 
         #region radioButtonStructureClearSelections ✔
+
+        // ### 6.12 -> Create a custom method that will clear and reset the TextBboxes, ComboBox and -> Radio button ###
+
         /// <summary>
         /// Clears both RadioButtons within Panel Structure
         /// </summary>
@@ -573,7 +647,10 @@ namespace WikiApplication
         /// </summary>
         private void displayWikiInformation()
         {
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
             // ### 6.9 Create a single custom method that will -> sort and then display the Name and Category from the wiki information in the list. ###
 
             WikiList.Sort(); // Sort WikiList List of Instances of Infomation using CompareTo <Information>Name
@@ -613,6 +690,9 @@ namespace WikiApplication
 
             editingNotDuplicate = false; // Disable duplicate error messaging
             clearErrorProviders(); // Clear all Error Providers
+
+            // ### 6.11 Create a ListView event so a user can select a Data Structure Name from the list of Names ###
+            // ### -> and the associated information will be displayed in the related text boxes combo box and radio button. ###
 
             // ### 6.11 Create a ListView event so a user can select a Data Structure Name from the list of Names ###
             // ### -> and the associated information will be displayed in the related text boxes combo box and radio button. ###
@@ -1055,6 +1135,9 @@ namespace WikiApplication
         #endregion
 
         #region Save WikiList to File Upon Form Closing - WikiApplicationForm_FormClosing ✔
+
+        // ### 6.15 The Wiki application will save data when the form closes. ###
+
         /// <summary>
         /// Upon form closing Save WikiList to default filename
         /// </summary>
