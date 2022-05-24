@@ -54,7 +54,7 @@ namespace WikiApplication
         const string comboBoxCatergoriesFileName = "comboBoxCatergories.txt";
 
         // Used to prevent Name Displaying duplicate errorProvider messaging when editing Information
-        Boolean editingNotDuplicate = false; // Disable duplicate error messaging
+        Boolean nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
 
         // Used to create default File Name to Open and Save
         const string useFileName = "definitions.bin";
@@ -69,7 +69,7 @@ namespace WikiApplication
         // Default files folder name
         const string defaultFileFolderName = "Files";
 
-        // Used to switch DisplayToLabelMsg text colour
+        // Used to switch displayToLabelMsg text colour
         const string statusBarErrorMsg = "Red"; // Error message
         const string statusBarUserMsg = "White"; // User message
         #endregion
@@ -201,7 +201,7 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonAdd_Click(object sender, EventArgs e)
         {
-            string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
+            string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower()); // store first as clear all form data
 
             // Check for Duplicate Information Name in WikiList with validName
             if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())))
@@ -214,7 +214,7 @@ namespace WikiApplication
                 // Use Information Constructor to Add Information Object to WikiList
                 WikiList.Add(new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text));
                 clearFormData(); // Clean Up Form
-                DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Added to Wiki List.", statusBarUserMsg);
+                displayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Added to Wiki List.", statusBarUserMsg);
                 displayWikiInformation(); // Display WikiList to ListView
             }
         }
@@ -228,18 +228,25 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonEdit_Click(object sender, EventArgs e)
         {
-            clearAllErrorPanels(); // clean up Add error
             try
             {
-                string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
-                WikiList[listViewWiki.SelectedIndices[0]] = new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
-                clearFormData(); // clean up form
-                DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Edited in Wiki List.", statusBarUserMsg);
-                displayWikiInformation(); // Display WikiList to ListView  
+                // Store Selected Wiki Information for Name Selected from the list to output for messaging
+                string oldTextBoxNameContents = WikiList.ElementAt(listViewWiki.SelectedIndices[0]).GetName(); // attempt to store - force try catch - user selected nothing from List View
+                
+                // Check for Duplicate Information Name in WikiList with validName
+                if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) && nameModifiedLookForDuplicate)
+                    inCorrectNameError();
+                else if (validateFormInput() && (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate))
+                {     
+                    WikiList[listViewWiki.SelectedIndices[0]] = new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
+                    clearFormData(); // clean up form
+                    displayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Edited in Wiki List.", statusBarUserMsg);
+                    displayWikiInformation(); // Display WikiList to ListView  
+                }
             }
             catch
             {
-                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView!", statusBarErrorMsg);
+                displayToLabelMsg("ERROR: Select a Wiki Name from ListView!", statusBarErrorMsg);
             }
         }
         #endregion
@@ -252,14 +259,13 @@ namespace WikiApplication
         /// <param name="e">Event data</param>
         private void buttonDelete_Click(object sender, EventArgs e)
         {
-            clearAllErrorPanels(); // clean up Add error
             try
             {
-                string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower());
+                string oldTextBoxNameContents = textinfo.ToTitleCase(textBoxName.Text.ToLower()); // store first as clear all form data
                 // Check that the User has not modified after or entered new Information before current or previous ListView Selection
                 Information compareWith = new Information(textinfo.ToTitleCase(textBoxName.Text.ToLower()), comboBoxCategory.Text, radioButtonStructureGetSelected(), textBoxDefinition.Text);
-                if (!informationMatches(WikiList.ElementAt(listViewWiki.SelectedIndices[0]), compareWith))
-                    DisplayToLabelMsg("ERROR: Information no longer Matches current Selection from List!", statusBarErrorMsg);
+                if (!informationMatches(WikiList.ElementAt(listViewWiki.SelectedIndices[0]), compareWith)) // also forces try catch - user selected nothing from List View
+                    displayToLabelMsg("ERROR: Information no longer Matches current Selection from List!", statusBarErrorMsg);
                 else
                 {
                     DialogResult DeleteValue = MessageBox.Show("Are you sure you want to Delete this Information?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -267,15 +273,15 @@ namespace WikiApplication
                     {
                         WikiList.RemoveAt(listViewWiki.SelectedIndices[0]);
                         clearFormData(); // clean up form
-                        DisplayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Deleted from Wiki List.", statusBarUserMsg);
+                        displayToLabelMsg("Information with Name: \"" + oldTextBoxNameContents + "\" Deleted from Wiki List.", statusBarUserMsg);
                         displayWikiInformation(); // Display WikiList to ListView
                     }
-                    else DisplayToLabelMsg("User Cancelled Deletion of Information.", statusBarUserMsg);
+                    else displayToLabelMsg("User Cancelled Deletion of Information.", statusBarUserMsg);
                 }
             }
             catch
             {
-                DisplayToLabelMsg("ERROR: Select a Wiki Name from ListView!", statusBarErrorMsg);
+                displayToLabelMsg("ERROR: Select a Wiki Name from ListView!", statusBarErrorMsg);
             }
         }
         #endregion
@@ -315,30 +321,27 @@ namespace WikiApplication
                         }
                         textBoxDefinition.Text = WikiList[foundIndex].GetDefinition();
 
-                        if (listViewWiki.SelectedIndices[0] != -1)
-                            listViewWiki.Items[listViewWiki.SelectedIndices[0]].Selected = false;
-
-                      /*  try
+                        try
                         {
                             // Clear Possible Previous Selected Item - prevents two from being selected
                             listViewWiki.Items[listViewWiki.SelectedIndices[0]].Selected = false;
                         }
                         catch
                         {
-                            // do nothing - prevent crash when nothing was selected
-                        }*/
+                            // do nothing - prevent crash when nothing was selected from List View
+                        }
 
                         // Set ListView Item to Found Item
                         listViewWiki.Items[foundIndex].Selected = true; // Set selection on List View to found Search Name
                         listViewWiki.Focus(); // Focus on List View to Highlight in Blue the Selection
 
-                        DisplayToLabelMsg("Information with Name: \"" + textinfo.ToTitleCase(textBoxSearchName.Text.ToLower()) + "\" Found!", statusBarUserMsg);
+                        displayToLabelMsg("Information with Name: \"" + textinfo.ToTitleCase(textBoxSearchName.Text.ToLower()) + "\" Found!", statusBarUserMsg);
                     }
-                    else DisplayToLabelMsg("Information with Name: \"" + textinfo.ToTitleCase(textBoxSearchName.Text.ToLower()) + "\" NOT Found!", statusBarUserMsg);
+                    else displayToLabelMsg("Information with Name: \"" + textinfo.ToTitleCase(textBoxSearchName.Text.ToLower()) + "\" NOT Found!", statusBarUserMsg);
                 }
-                else DisplayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
+                else displayToLabelMsg("ERROR: Enter Name to Search!", statusBarErrorMsg);
             }
-            else DisplayToLabelMsg("ERROR: Nothing in the Wiki List to Search!", statusBarErrorMsg);
+            else displayToLabelMsg("ERROR: Nothing in the Wiki List to Search!", statusBarErrorMsg);
             textBoxSearchName.Clear();
         }
         #endregion
@@ -365,16 +368,16 @@ namespace WikiApplication
                     clearFormData(); // Clean Up Form
                     userSelectedFileName = saveBinaryDialog.FileName;
                     if (saveBinaryFile(userSelectedFileName))
-                        DisplayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Saved.", statusBarUserMsg);
+                        displayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Saved.", statusBarUserMsg);
                     else
                         MessageBox.Show("Cannot Write data to file " + Path.GetFileName(userSelectedFileName) + "!", "SYSTEM ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 if (sr == DialogResult.Cancel)
                 {
-                    DisplayToLabelMsg("USER CANCELLED: Did NOT Save Records to a File.", statusBarUserMsg);
+                    displayToLabelMsg("USER CANCELLED: Did NOT Save Records to a File.", statusBarUserMsg);
                 }
             }
-            else DisplayToLabelMsg("ERROR: Nothing in List View WikiList to Save!", statusBarErrorMsg);
+            else displayToLabelMsg("ERROR: Nothing in List View WikiList to Save!", statusBarErrorMsg);
         }
         #endregion
 
@@ -402,17 +405,17 @@ namespace WikiApplication
                 {
                     displayWikiInformation(); // Display WikiList to ListView
                     clearFormData(); // Clean Up Form
-                    DisplayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Opened.", statusBarUserMsg);
+                    displayToLabelMsg("Binary File \"" + Path.GetFileName(userSelectedFileName) + "\" Opened.", statusBarUserMsg);
                 }
                 else
                 {
                     MessageBox.Show("Invalid File Format \"" + Path.GetFileName(userSelectedFileName) + "\"!", "SYSTEM ERROR",  MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    DisplayToLabelMsg("ERROR: File \"" + Path.GetFileName(userSelectedFileName) + "\" Not Opened!", statusBarErrorMsg);
+                    displayToLabelMsg("ERROR: File \"" + Path.GetFileName(userSelectedFileName) + "\" Not Opened!", statusBarErrorMsg);
                 }
             }
             if (sr == DialogResult.Cancel)
             {
-                DisplayToLabelMsg("USER CANCELLED: Did NOT Read Records from a File.", statusBarUserMsg);
+                displayToLabelMsg("USER CANCELLED: Did NOT Read Records from a File.", statusBarUserMsg);
             }
         }
         #endregion
@@ -513,8 +516,10 @@ namespace WikiApplication
         {
             int selectedItem = listViewWiki.SelectedIndices[0]; // Item selected from ListView
 
-            editingNotDuplicate = false; // Disable duplicate error messaging
+            nameModifiedLookForDuplicate = false; // Disable duplicate error messaging
+            
             clearErrorProviders(); // Clear all Error Providers
+            clearAllErrorPanels(); // clear all Error Panels
 
             // Load Form with Data from ListView Selection
             textBoxName.Text = WikiList[selectedItem].GetName();
@@ -530,7 +535,7 @@ namespace WikiApplication
             }
             textBoxDefinition.Text = WikiList[selectedItem].GetDefinition();
 
-            DisplayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Selected from the List View.", statusBarUserMsg);
+            displayToLabelMsg("Information with Name: \"" + textBoxName.Text + "\" Selected from the List View.", statusBarUserMsg);
         }
         #endregion
         #endregion
@@ -559,6 +564,7 @@ namespace WikiApplication
             textBoxDefinition.Clear(); // Clear TextBox Definition
             textBoxName.Focus(); // Focus User Input on Name
             clearErrorProviders(); // clear all Error Messaging
+            clearAllErrorPanels(); // clear all Error Panels
         }
         #endregion
 
@@ -710,31 +716,36 @@ namespace WikiApplication
             {
                 errorProviderNameCorrect.Clear();
             }
-            else if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) && !editingNotDuplicate) // Name duplicated - else if - now not duplicated clear error messaging
+            else if (nameModifiedLookForDuplicate) // Edit mode with Changes made to Name or Add mode
             {
-                e.Cancel = true; // Prevent other events
-                inCorrectNameError(); // Message User to fix Duplicate Information Name
+                if (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())))
+                {
+                    e.Cancel = true; // Prevent other events
+                    inCorrectNameError(); // Message User to fix Duplicate Information Name
+                }
+                else
+                {
+                    e.Cancel = false; // Allow other events
+                    errorProviderNameInCorrect.Clear();
+                    errorProviderNameCorrect.SetError(textBoxName, "Valid"); // icon hover user message
+                    toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
+                }
             }
-            else
-            {
-                e.Cancel = false; // Allow other events
-                errorProviderNameInCorrect.Clear();
-                errorProviderNameCorrect.SetError(textBoxName, "Valid"); // icon hover user message
-                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
-            }
+            else errorProviderNameInCorrect.Clear();
         }
         #endregion
 
         #region textBoxName_KeyPress - Clear Error Messaging ✔
         /// <summary>
         /// On KeyPress for textBoxName Clear all the Error Providers and toolStripStatusLabelUserMessanging
+        /// Sets Edit mode to look for duplicates as modified
         /// </summary>
         /// <param name="sender">Object which initiated the event</param>
         /// <param name="e">Event data</param>
         private void textBoxName_KeyPress(object sender, KeyPressEventArgs e)
         {
             clearErrorProviders(); // Clear all Error Providers
-            editingNotDuplicate = true; // Display duplicate error messaging
+            nameModifiedLookForDuplicate = true; // Display duplicate error messaging
         }
         #endregion
 
@@ -747,7 +758,7 @@ namespace WikiApplication
             textBoxName.Focus(); // Focus for user to correct input
             errorProviderNameCorrect.Clear();
             errorProviderNameInCorrect.SetError(textBoxName, "Name already Exists"); // icon hover error message
-            DisplayToLabelMsg("Error: Information with Name \"" + textinfo.ToTitleCase(textBoxName.Text.ToLower()) + "\" already Exists!", statusBarErrorMsg);
+            displayToLabelMsg("Error: Information with Name \"" + textinfo.ToTitleCase(textBoxName.Text.ToLower()) + "\" already Exists!", statusBarErrorMsg);
         }
 
         #region Clear Error Provider Messages - clearErrorProviders
@@ -804,8 +815,13 @@ namespace WikiApplication
                 formValid = false;
             }
 
-            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())))
-                DisplayToLabelMsg("Error: Fill in Form Information for " + userErrorMsg, statusBarErrorMsg + ".");
+            // When in Edit mode but Attempt to Add - don't display to allow for In Valid Name message to remain
+            if (!formValid)
+            {
+                // In case Not Valid Name or Edit mode with look for duplicates - entered - don't display to allow for In Valid Name message to remain
+                if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || (!validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) && !nameModifiedLookForDuplicate))
+                    displayToLabelMsg("Error: Fill in Form Information for " + userErrorMsg + ".", statusBarErrorMsg);
+            }
 
             return formValid;
         }
@@ -837,40 +853,52 @@ namespace WikiApplication
         private void panelNameError_MouseClick(object sender, MouseEventArgs e)
         {
             panelNameError.Visible = false;
+            toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
             textBoxName.Focus();
         }
         private void comboBoxCategory_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate)
+            {
                 panelCategoryError.Visible = false;
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
+            } 
             else inCorrectNameError();
         }
         private void panelCategoryError_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate)
             {
                 panelCategoryError.Visible = false;
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
                 comboBoxCategory.Focus();
             }
             else inCorrectNameError();
         }
         private void radioButtonLinear_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate)
+            {
                 panelStructureError.Visible = false;
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
+            } 
             else inCorrectNameError();
         }
         private void radioButtonNonLinear_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate)
+            {
                 panelStructureError.Visible = false;
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
+            } 
             else inCorrectNameError();
         }
         private void panelDefinitionError_MouseClick(object sender, MouseEventArgs e)
         {
-            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !editingNotDuplicate)
+            if (validName(textinfo.ToTitleCase(textBoxName.Text.ToLower())) || !nameModifiedLookForDuplicate)
             {
                 panelDefinitionError.Visible = false;
+                toolStripStatusLabelUserMessaging.Text = ""; // Clear the User Status Strip User Messaging
                 textBoxDefinition.Focus();
             }
             else inCorrectNameError();
@@ -898,14 +926,14 @@ namespace WikiApplication
         #endregion
         #endregion
 
-        #region DisplayToLabelMsg - ToolStripStatus User Messaging Utility ✔
+        #region displayToLabelMsg - ToolStripStatus User Messaging Utility ✔
         /// <summary>
         /// Displays string with given onto toolStripStatusLabelUserMessaging and flashes 
         /// statusStripUserMessaging to draw attention to user that message has been updated
         /// </summary>
         /// <param name="message">The string to Display in the Tool Label</param>
         /// <param name="colour">Colour to set showed message text</param>
-        private void DisplayToLabelMsg(string message, string colour)
+        private void displayToLabelMsg(string message, string colour)
         {
             switch (colour)
             {
